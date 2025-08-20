@@ -5,3 +5,41 @@ body{
 .card{
   margin-top: 8px;
 }
+
+#navbar {
+  position: fixed; /* لتبقى في الأعلى دائماً */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  transition: top 0.3s; /* حركة سلسة عند الاختفاء */
+}
+/* Inputs حديثة */
+.form-control:focus {
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+  border-color: #0d6efd;
+  transition: all 0.3s;
+}
+
+/* زر Show Password */
+
+.eye {
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+/* Animation عند فتح/إغلاق الـ Modal */
+.modal.fade .modal-dialog {
+  transition: transform 0.3s ease-out;
+  transform: translateY(-50px);
+}
+
+.modal.fade.show .modal-dialog {
+  transform: translateY(0);
+}
+
+#posts-container{
+  margin-top: 5.5rem;
+}
+
+
