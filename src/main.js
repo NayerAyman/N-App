@@ -11,7 +11,7 @@ import {
         signUpBtn,
         logInBtnNav,
         addPostBtn
-      }from'./constanse';
+      }from'./constants';
 
 const mainAPI = "https://tarmeezacademy.com/api/v1"
 const loginAPI = "https://tarmeezacademy.com/api/v1/login"
