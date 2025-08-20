@@ -1,13 +1,41 @@
+// استيراد CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
+import * as bootstrap from 'bootstrap';
+
+import {
+        logInBtnModal,
+        userName,
+        password,
+        logOutBtn,
+        signUpBtn,
+        logInBtnNav,
+        addPostBtn
+      }from'./constanse';
+
 const mainAPI = "https://tarmeezacademy.com/api/v1"
+const loginAPI = "https://tarmeezacademy.com/api/v1/login"
+
 
 import axios from 'axios';
 
 const postsContainer = document.getElementById('posts-container');
+const navbar = document.getElementById('navbar');
+
+
+const closeLogInModal= function(){
+      const loginModalEl = document.getElementById('loginModal');
+    const modal = bootstrap.Modal.getInstance(loginModalEl) || new bootstrap.Modal(loginModalEl);
+    modal.hide();
+    userName.value=""
+    password.value=""
+    userName.focus();
+    document.getElementById('passwordInput').type = 'password';
+    document.getElementById('togglePassword').textContent = 'Show';
+
+}
 
 let lastScroll = 0;
-const navbar = document.getElementById('navbar');
 const popDownNav =function(){
 window.addEventListener('scroll', () => {
   const currentScroll = window.pageYOffset;
@@ -23,6 +51,8 @@ window.addEventListener('scroll', () => {
   lastScroll = currentScroll;
 });}
 popDownNav()
+
+
 const showPassword = function(){
   const togglePassword = document.getElementById('togglePassword');
 const passwordInput = document.getElementById('passwordInput');
@@ -91,3 +121,53 @@ const getPosts=function(){axios.get(`${mainAPI}/posts?limit=50`)
     alert('Error fetching posts:', error);
   });}
   getPosts()
+
+
+
+  logInBtnModal.addEventListener("click",function(e){
+    e.preventDefault()
+    let config = {
+      username: userName.value,
+      password: password.value
+    }
+
+    axios.post(loginAPI,config)
+    .then((res)=>{
+      const token = res.data.token
+
+      // save token
+
+      localStorage.setItem("token",token)
+
+      // close modal
+      closeLogInModal()
+
+      // change nav btns
+
+      signUpBtn.classList.add("d-none")
+      logInBtnNav.classList.add("d-none")
+
+      logOutBtn.classList.remove('d-none')
+
+      // show add post btn
+
+      addPostBtn.classList.remove("d-none")
+      addPostBtn.classList.add("d-flex")
+
+    })
+    .catch(err=>{
+      alert(err)
+    })
+  })
+
+  logOutBtn.addEventListener("click",function(){
+
+    localStorage.removeItem('token');
+
+    if(addPostBtn) addPostBtn.classList.add('d-none')
+
+      signUpBtn.classList.remove('d-none')
+      logInBtnNav.classList.remove('d-none')
+      logOutBtn.classList.add("d-none")
+      
+  })

@@ -13,7 +13,70 @@
 
   <!-- modals -->
 
-  <!--login Modal -->
+  <!-- & add post modal -->
+
+  <!-- Add Post Modal -->
+<div class="modal fade" id="addPostModal" tabindex="-1" aria-labelledby="addPostModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 shadow-lg border-0">
+      
+      <!-- Header -->
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold" id="addPostModalLabel">Create New Post</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <!-- Body -->
+      <div class="modal-body">
+        <form id="addPostForm" class="needs-validation" novalidate enctype="multipart/form-data">
+          
+          <div class="mb-3">
+            <label for="postTitle" class="form-label fw-semibold">Post Title</label>
+            <input 
+              type="text" 
+              class="form-control rounded-3" 
+              id="postTitle" 
+              placeholder="Enter your post title" 
+              required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="postBody" class="form-label fw-semibold">Post Content</label>
+            <textarea 
+              class="form-control rounded-3" 
+              id="postBody" 
+              rows="4" 
+              placeholder="Write something..." 
+              required></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="postImage" class="form-label fw-semibold">Attach Image (optional)</label>
+            <input 
+              type="file" 
+              class="form-control rounded-3" 
+              id="postImage" 
+              accept="image/*">
+          </div>
+          
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary rounded-3 fw-semibold shadow-sm">
+              Publish Post
+            </button>
+          </div>
+          
+        </form>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+  
+  <!-- & add post modal -->
+
+
+  <!--&login Modal -->
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content rounded-4 shadow-lg">
@@ -25,8 +88,8 @@
         <form id="loginForm">
           <!-- Email -->
           <div class="mb-3">
-            <label for="emailInput" class="form-label">Email</label>
-            <input type="email" class="form-control form-control-lg rounded-pill" id="emailInput" placeholder="Enter your email" required>
+            <label for="emailInput" class="form-label">User Name</label>
+            <input type="text" class="form-control form-control-lg rounded-pill" id="emailInput" placeholder="Enter your email" required>
           </div>
 
           <!-- Password -->
@@ -43,7 +106,7 @@
 
           <!-- Submit -->
           <div class="d-grid">
-            <button type="submit" class="btn btn-primary btn-lg rounded-pill">Log In</button>
+            <button type="submit" id="btn-login" class="btn btn-primary btn-lg rounded-pill">Log In</button>
           </div>
         </form>
       </div>
@@ -94,8 +157,11 @@
 
         <!-- Two buttons on the right -->
         <div class="d-flex">
-          <button style="font-weight: 600;" class="btn btn-outline-primary me-2">Sign Up</button>
-          <button style="font-weight: 600;" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+          <button id="btn-sign-up" style="font-weight: 600;" class="btn btn-outline-primary me-2">Sign Up</button>
+          <button id="btn-log-in-nav" style="font-weight: 600;" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+          <button id="btn-logout" style="font-weight: 600;" class="btn btn-danger me-2 d-none">
+          Logout
+          </button>
         </div>
       </div>
     </div>
@@ -137,6 +203,35 @@
 
   <!-- / / posts // -->
 
+  <!-- * add post btn -->
+
+<button
+  id="fabAddPost"
+  type="button"
+  class="btn btn-primary rounded-circle position-fixed d-none"
+  style="
+    width:64px; height:64px;
+    right:1rem; bottom:1rem; z-index:1080;
+    background: linear-gradient(135deg, #5865f2, #7a5cff);
+    box-shadow: 0 10px 25px rgba(88,101,242,.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  "
+  data-bs-toggle="modal"
+  data-bs-target="#addPostModal"
+  aria-label="Add Post"
+>
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+    <path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+  </svg>
+</button>
+
+
+
+
+  <!-- * add post btn -->
 
   <script type="module" src="/src/main.js"></script>
 </body>
