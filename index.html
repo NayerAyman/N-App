@@ -11,8 +11,54 @@
 
 <body>
 
+  <!-- modals -->
+
+  <!--login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 shadow-lg">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="loginModalLabel">Log In</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="loginForm">
+          <!-- Email -->
+          <div class="mb-3">
+            <label for="emailInput" class="form-label">Email</label>
+            <input type="email" class="form-control form-control-lg rounded-pill" id="emailInput" placeholder="Enter your email" required>
+          </div>
+
+          <!-- Password -->
+          <div class="mb-3 position-relative">
+            <label for="passwordInput" class="form-label">Password</label>
+            <input type="password" class="form-control form-control-lg rounded-pill" id="passwordInput" placeholder="Enter your password" required>
+            <button type="button" style="top:55px ;" class="btn btn-sm  position-absolute  end-0 translate-middle-y me-2" id="togglePassword">
+              <svg class="eye" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+  <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+  <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+</svg>
+            </button>
+          </div>
+
+          <!-- Submit -->
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg rounded-pill">Log In</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+  <!--login modal  -->
+
+
+  <!--/ // modals // -->
+
+
+
   <!-- nav bar -->
-  <div class="container shadow rounded-4  bg-white my-2" ">
+  <div  id="navbar"  class="container shadow rounded-4  bg-white my-2" ">
     <!-- nav bar -->
     <nav class=" navbar navbar-expand-lg navbar-light style="max-width: 100%; shadow rounded-4">
     <div class="container">
@@ -49,7 +95,7 @@
         <!-- Two buttons on the right -->
         <div class="d-flex">
           <button style="font-weight: 600;" class="btn btn-outline-primary me-2">Sign Up</button>
-          <button style="font-weight: 600;" class="btn btn-primary">Login</button>
+          <button style="font-weight: 600;" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
         </div>
       </div>
     </div>
@@ -57,18 +103,16 @@
 
     <!-- / / nav bar// -->
   </div>
-
+<!--/ / nav bar // -->
 
   <!-- posts -->
-  <div class="container my-5">
-
-
+  <div id="posts-container" class="container ">
     <!-- post -->
-    <div class="card shadow rounded-4 mx-auto" style="max-width: 90%;">
+    <div  class="card shadow rounded-4 mx-auto" style="max-width: 90%;">
       <!-- Card Header with user pic and time -->
       <div class="card-header d-flex align-items-center">
-        <img src="/public/user-icon-icon_1076610-59410.avif" alt="User" class="rounded-circle me-3" width="50"
-          height="50">
+        <img src="public/user-icon-icon_1076610-59410.avif" alt="User" class="rounded-circle me-3" width="50"
+          height="50" >
         <div>
           <h6 class="mb-0">John Doe...</h6>
           <small class="text-muted">2 hours ago</small>
@@ -84,105 +128,11 @@
         <!-- Image inside body -->
         <img src="/public/trees-1.jpg" class="img-fluid rounded mb-3 d-block" alt="Post Image">
         <button class="btn btn-primary"> <span>( 3 ) </span> Comments</button>
-      </div>
-    </div>
-    <!-- /post// -->
-    <!-- post -->
-    <div class="card shadow rounded-4 mx-auto" style="max-width: 90%;">
-      <!-- Card Header with user pic and time -->
-      <div class="card-header d-flex align-items-center">
-        <img src="/public/user-icon-icon_1076610-59410.avif" alt="User" class="rounded-circle me-3" width="50"
-          height="50">
-        <div>
-          <h6 class="mb-0">John Doe</h6>
-          <small class="text-muted">2 hours ago</small>
-        </div>
-      </div>
 
-      <!-- Card Body -->
-      <div class="card-body">
-        <h5 class="card-title">Post Title Here</h5>
-        <p class="card-text">
-          This is the main content of the post. You can write paragraphs, links, or any text you want here.
-        </p>
-        <!-- Image inside body -->
-        <img src="/public/trees-1.jpg" class="img-fluid rounded mb-3 d-block" alt="Post Image">
-        <button class="btn btn-primary"> <span>( 3 ) </span> Comments</button>
       </div>
     </div>
     <!-- /post// -->
-    <!-- post -->
-    <div class="card shadow rounded-4 mx-auto" style="max-width: 90%;">
-      <!-- Card Header with user pic and time -->
-      <div class="card-header d-flex align-items-center">
-        <img src="/public/user-icon-icon_1076610-59410.avif" alt="User" class="rounded-circle me-3" width="50"
-          height="50">
-        <div>
-          <h6 class="mb-0">John Doe</h6>
-          <small class="text-muted">2 hours ago</small>
-        </div>
-      </div>
-
-      <!-- Card Body -->
-      <div class="card-body">
-        <h5 class="card-title">Post Title Here</h5>
-        <p class="card-text">
-          This is the main content of the post. You can write paragraphs, links, or any text you want here.
-        </p>
-        <!-- Image inside body -->
-        <img src="/public/trees-1.jpg" class="img-fluid rounded mb-3 d-block" alt="Post Image">
-        <button class="btn btn-primary"> <span>( 3 ) </span> Comments</button>
-      </div>
-    </div>
-    <!-- /post// -->
-    <!-- post -->
-    <div class="card shadow rounded-4 mx-auto" style="max-width: 90%;">
-      <!-- Card Header with user pic and time -->
-      <div class="card-header d-flex align-items-center">
-        <img src="/public/user-icon-icon_1076610-59410.avif" alt="User" class="rounded-circle me-3" width="50"
-          height="50">
-        <div>
-          <h6 class="mb-0">John Doe</h6>
-          <small class="text-muted">2 hours ago</small>
-        </div>
-      </div>
-
-      <!-- Card Body -->
-      <div class="card-body">
-        <h5 class="card-title">Post Title Here</h5>
-        <p class="card-text">
-          This is the main content of the post. You can write paragraphs, links, or any text you want here.
-        </p>
-        <!-- Image inside body -->
-        <img src="/public/trees-1.jpg" class="img-fluid rounded mb-3 d-block" alt="Post Image">
-        <button class="btn btn-primary"> <span>( 3 ) </span> Comments</button>
-      </div>
-    </div>
-    <!-- /post// -->
-    <!-- post -->
-    <div class="card shadow rounded-4 mx-auto" style="max-width: 90%;">
-      <!-- Card Header with user pic and time -->
-      <div class="card-header d-flex align-items-center">
-        <img src="/public/user-icon-icon_1076610-59410.avif" alt="User" class="rounded-circle me-3" width="50"
-          height="50">
-        <div>
-          <h6 class="mb-0">John Doe</h6>
-          <small class="text-muted">2 hours ago</small>
-        </div>
-      </div>
-
-      <!-- Card Body -->
-      <div class="card-body">
-        <h5 class="card-title">Post Title Here</h5>
-        <p class="card-text">
-          This is the main content of the post. You can write paragraphs, links, or any text you want here.
-        </p>
-        <!-- Image inside body -->
-        <img src="/public/trees-1.jpg" class="img-fluid rounded mb-3 d-block" alt="Post Image">
-        <button class="btn btn-primary"> <span>( 3 ) </span> Comments</button>
-      </div>
-    </div>
-    <!-- /post// -->
+    
   </div>
 
   <!-- / / posts // -->
