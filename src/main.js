@@ -183,7 +183,9 @@ const getPosts=function(){axios.get(`${postsAPI}`)
 
             
             <div class="card-body">
-              <h5 class="card-title">${post.title}</h5>
+            ${post.title?`<h5 class="card-title">${post.title}</h5>`:""}
+              
+
               <p class="card-text">
                 ${post.body}
               </p>
@@ -472,7 +474,7 @@ function dismissLoadingToast() {
     formData.append("image",postImage.files[0])
     }
     
-    showLoadingToast()
+    const loder = showLoadingToast()
     addPostSubmitBtn.disabled = true
     axios.post(addPostAPI,formData,{
       headers:{
@@ -518,8 +520,8 @@ function dismissLoadingToast() {
         timerProgressBar: true
       });
     }).finally(()=>{
-      dismissLoadingToast()
       addPostSubmitBtn.disabled = false
+      loder.close()
     })
     
   })
