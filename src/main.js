@@ -66,9 +66,9 @@ const navbar = document.getElementById('navbar');
       // add user name and photo to navbar (profile)
 
       const userPhoto = document.getElementById("userPhoto");
-      userPhoto.src = user.profile_image || "/public/user-icon-icon_1076610-59410.avif";
+      userPhoto.src = user.profile_image || "user-icon-icon_1076610-59410.avif";
       userPhoto.onerror = () => {
-        userPhoto.src = "/public/user-icon-icon_1076610-59410.avif";
+        userPhoto.src = "user-icon-icon_1076610-59410.avif";
       };
       document.getElementById("userName").textContent = user.name;
 
@@ -167,12 +167,12 @@ const getPosts=function(){axios.get(`${postsAPI}`)
             
             <div class="card-header d-flex align-items-center">
                   <img 
-                  src="${post.author.profile_image || '/user-icon-icon_1076610-59410.avif'}" 
+                  src="${post.author.profile_image || 'user-icon-icon_1076610-59410.avif'}" 
                   alt="User" 
                   class="rounded-circle me-3" 
                   width="50" 
                   height="50"
-                  onerror="this.onerror=null; this.src='/user-icon-icon_1076610-59410.avif';"
+                  onerror="this.onerror=null; this.src='user-icon-icon_1076610-59410.avif';"
                 >
                 
               <div>
