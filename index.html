@@ -3,6 +3,8 @@
 
 <head>
   <meta charset="UTF-8" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
   <link rel="icon" type="image/svg+xml" href="/public/icon NizzyApp.png" />
   <link rel="stylesheet" href="/src/style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,7 +12,12 @@
 </head>
 
 <body>
+<!-- //* starting logo */ -->
+  <div id="preloader">
+    <img src="icon NizzyApp.png" alt="Loading..." class="logo-pulse">
+  </div>
 
+<!-- //* starting logo */ -->
   <!-- modals -->
 
   <!-- & add post modal -->
@@ -76,6 +83,79 @@
   <!-- & add post modal -->
 
 
+  <!--& Register Modal -->
+
+<div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content rounded-4 shadow-lg border-0">
+      
+      <!-- Header -->
+      <div class="modal-header border-0 bg-primary text-white rounded-top-4">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-person-plus-fill me-2"></i> Create Account
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <!-- Body -->
+      <div class="modal-body p-4">
+        <form id="registerForm" class="needs-validation" novalidate>
+          <div class="row g-3">
+            
+            <!-- Full Name -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Name</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                <input type="text" class="form-control" placeholder="John Doe" required>
+              </div>
+            </div>
+            
+            <!-- Username -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Username</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-at"></i></span>
+                <input type="text" class="form-control" placeholder="@username" required>
+              </div>
+            </div>
+            
+
+            <!-- Password -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Password</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                <input type="password" id="registerPassword" class="form-control" placeholder="••••••" required>
+                <button class="btn btn-outline-secondary" type="button" id="rtogglePassword">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Profile Photo -->
+            <div class="col-12">
+              <label class="form-label fw-semibold">Profile Photo</label>
+              <input class="form-control" type="file" accept="image/*">
+            </div>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Footer -->
+      <div class="modal-footer border-0 d-flex justify-content-between">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" form="registerForm" class="btn btn-primary">
+          <i class="bi bi-person-check me-1"></i> Register
+        </button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+  <!--& register Modal -->
+
   <!--&login Modal -->
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -96,13 +176,13 @@
           <div class="mb-3 position-relative">
             <label for="passwordInput" class="form-label">Password</label>
             <input type="password" class="form-control form-control-lg rounded-pill" id="passwordInput" placeholder="Enter your password" required>
-            <button type="button" style="top:55px ;" class="btn btn-sm  position-absolute  end-0 translate-middle-y me-2" id="togglePassword">
-              <svg class="eye" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
-  <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
-  <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
-</svg>
+            
+            <button type="button" style="top:55px;" class="btn btn-sm position-absolute end-0 translate-middle-y me-3" id="togglePassword">
+              Show
             </button>
           </div>
+
+
 
           <!-- Submit -->
           <div class="d-grid">
@@ -138,14 +218,14 @@
       <!-- Navigation links -->
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto">
-          <li class="nav-item">
+          <li class="nav-item activ">
             <a style="font-size: large ; font-weight: 700 ; " class="nav-link " href="#">
               <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-house-door-fill" viewBox="0 0 16 20">
   <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5"/>
 </svg>
               Home</a>
           </li>
-          <li style="font-size: large ; font-weight: 700 ;" class="nav-item">
+          <li id="Profile" style="font-size: large ; font-weight: 700 ;" class="nav-item">
             <a class="nav-link" href="#">
               <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 18">
   <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
@@ -157,7 +237,7 @@
 
         <!-- Two buttons on the right -->
         <div class="d-flex">
-          <button id="btn-sign-up" style="font-weight: 600;" class="btn btn-outline-primary me-2">Sign Up</button>
+          <button id="btn-sign-up" style="font-weight: 600;" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#registerModal">register</button>
           <button id="btn-log-in-nav" style="font-weight: 600;" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
           <button id="btn-logout" style="font-weight: 600;" class="btn btn-danger me-2 d-none">
           Logout
@@ -233,7 +313,18 @@
 
   <!-- * add post btn -->
 
-  <script type="module" src="/src/main.js"></script>
+
+  <!-- * Guest Badge -->
+
+  <div id="guestBadge" class="guest-badge" aria-label="Guest user" title="Guest">
+    <!-- SVG ضيف بسيط -->
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <path fill="currentColor" d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.42 0-8 2.239-8 5v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-2.761-3.58-5-8-5Z"/>
+    </svg>
+  </div>
+  <!-- * Guest Badge -->
+
+  <script type="module" src="/src/main.js"  ></script>
 </body>
 
 </html>

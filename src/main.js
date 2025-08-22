@@ -3,6 +3,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import * as bootstrap from 'bootstrap';
 
+import axios from 'axios';
+import Swal from 'sweetalert2';
+
 import {
         logInBtnModal,
         userName,
@@ -13,16 +16,42 @@ import {
         addPostBtn
       }from'./constants';
 
-const mainAPI = "https://tarmeezacademy.com/api/v1"
+const postsAPI = "https://tarmeezacademy.com/api/v1/posts?limit=50"
 const loginAPI = "https://tarmeezacademy.com/api/v1/login"
-
-
-import axios from 'axios';
+const signUpAPI = "https://tarmeezacademy.com/api/v1/login/register"
 
 const postsContainer = document.getElementById('posts-container');
 const navbar = document.getElementById('navbar');
 
+      const guest = document.getElementById('guestBadge');
+      const profileLink = document.getElementById("Profile")
 
+
+      const logOutUI = function(){
+            if(addPostBtn) addPostBtn.classList.add('d-none')
+            signUpBtn.classList.remove('d-none')
+            logInBtnNav.classList.remove('d-none')
+            logOutBtn.classList.add("d-none")
+            guest.classList.remove('d-none');
+            profileLink.classList.add("d-none");
+      } 
+
+      const loginUI = function(){
+              signUpBtn.classList.add("d-none")
+      logInBtnNav.classList.add("d-none")
+
+      logOutBtn.classList.remove('d-none')
+
+      // show add post btn
+
+      addPostBtn.classList.remove("d-none")
+      addPostBtn.classList.add("d-flex")
+
+      guest.classList.add('d-none');
+      profileLink.classList.remove("d-none")
+
+      } 
+      
 const closeLogInModal= function(){
       const loginModalEl = document.getElementById('loginModal');
     const modal = bootstrap.Modal.getInstance(loginModalEl) || new bootstrap.Modal(loginModalEl);
@@ -52,22 +81,39 @@ window.addEventListener('scroll', () => {
 });}
 popDownNav()
 
+const showPasswordRegister=function(){
+  document.getElementById("rtogglePassword").addEventListener("click", function () {
+  const passwordInput = document.getElementById("registerPassword");
+  const icon = this.querySelector("i");
+
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    icon.classList.remove("bi-eye");
+    icon.classList.add("bi-eye-slash");
+  } else {
+    passwordInput.type = "password";
+    icon.classList.remove("bi-eye-slash");
+    icon.classList.add("bi-eye");
+  }
+});
+}
+showPasswordRegister()
 
 const showPassword = function(){
-  const togglePassword = document.getElementById('togglePassword');
-const passwordInput = document.getElementById('passwordInput');
+  const togglePassword = document.getElementById("togglePassword");
+  const passwordInput = document.getElementById("passwordInput");
 
-togglePassword.addEventListener('click', () => {
-  const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-  passwordInput.setAttribute('type', type);
-  togglePassword.textContent = type === 'password' ? 'Show' : 'Hide';
-});
+  togglePassword.addEventListener("click", () => {
+    const isPassword = passwordInput.type === "password";
+    passwordInput.type = isPassword ? "text" : "password";
+    togglePassword.textContent = isPassword ? "Hide" : "Show";
+  });
 }
 showPassword()
 
 
 // get posts
-const getPosts=function(){axios.get(`${mainAPI}/posts?limit=50`)
+const getPosts=function(){axios.get(`${postsAPI}`)
   .then(response => {
     const posts = response.data.data;
 
@@ -109,17 +155,34 @@ const getPosts=function(){axios.get(`${mainAPI}/posts?limit=50`)
               />
 
               <button class="btn btn-primary"> <span>( ${post.comments_count} ) </span> Comments</button>
-              ${post.tags.map(tag => `<a href="#" class="btn btn-secondary">${tag}</a>`).join('')}
+              ${post.tags.map(tag => `<a href="#" class="btn btn-secondary">${tag.name}</a>`).join('')}
             </div>
           </div>
       `;
 
       postsContainer.innerHTML += postHTML;
     });
-  })
-  .catch(error => {
-    alert('Error fetching posts:', error);
-  });}
+      const preloader = document.getElementById("preloader");;
+
+      preloader.classList.add("hidden");
+    })
+    .catch(error => {
+      // ✅ خطأ: برضه نخفي الـ preloader عشان ما يعلقش
+      document.getElementById("preloader").classList.add("hidden");
+
+      Swal.fire({
+        toast: true,
+        icon: 'error',
+        title: error.response?.data?.message || 'Something went wrong!',
+        position: 'top-end',
+        background: '#e47a7aff', // 🔥 داكن
+        color: '#fff',
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true
+      });
+    });
+};
   getPosts()
 
 
@@ -134,40 +197,102 @@ const getPosts=function(){axios.get(`${mainAPI}/posts?limit=50`)
     axios.post(loginAPI,config)
     .then((res)=>{
       const token = res.data.token
+      const user = JSON.stringify(res.data.user)
 
       // save token
 
       localStorage.setItem("token",token)
+      localStorage.setItem("user",user)
 
       // close modal
       closeLogInModal()
 
       // change nav btns
 
-      signUpBtn.classList.add("d-none")
-      logInBtnNav.classList.add("d-none")
+      loginUI()
+      // alert successes
 
-      logOutBtn.classList.remove('d-none')
-
-      // show add post btn
-
-      addPostBtn.classList.remove("d-none")
-      addPostBtn.classList.add("d-flex")
-
+      Swal.fire({
+  toast: true,
+  icon: 'success',
+  title: 'Logged in',
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 2000,
+  background: '#333',
+  color: '#fff',
+  customClass: {
+    popup: 'small-toast'
+  }
+});
     })
     .catch(err=>{
-      alert(err)
+      Swal.fire({
+        toast: true,
+        icon: 'error',
+        title: err.response?.data?.message || 'Something went wrong!',
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true
+      });
     })
   })
 
-  logOutBtn.addEventListener("click",function(){
+logOutBtn.addEventListener("click", function () {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: "Do you want to log out?",
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, log out',
+    cancelButtonText: 'Cancel',
+    background: '#1e1e2f',
+    color: '#fff',
+    confirmButtonColor: '#4e9af1',
+    cancelButtonColor: '#f44336',
+    showClass: {
+      popup: 'animate__animated animate__fadeInDown'
+    },
+    hideClass: {
+      popup: 'animate__animated animate__fadeOutUp'
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // 🟢 تنفيذ تسجيل الخروج
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
 
-    localStorage.removeItem('token');
+      logOutUI()
+      // ✅ Toast مودرن
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: 'Logged out successfully',
+        showConfirmButton: false,
+        timer: 2000,
+        background: '#2b2b3c',
+        color: '#fff',
+        customClass: { popup: 'animate__animated animate__fadeInUp small-toast' }
+      });
+    }
+  });
+});
 
-    if(addPostBtn) addPostBtn.classList.add('d-none')
 
-      signUpBtn.classList.remove('d-none')
-      logInBtnNav.classList.remove('d-none')
-      logOutBtn.classList.add("d-none")
-      
-  })
+  const setUpUI = function(){
+
+    const token = localStorage.getItem("token")
+
+    if(token){
+
+      loginUI()
+
+    }else{
+
+      logOutUI()
+
+    }
+  }
+  setUpUI()
