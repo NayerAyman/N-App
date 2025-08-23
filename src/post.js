@@ -25,7 +25,7 @@ import {
         postImage,
       }from'./constants';
 
-const postsAPI = "https://tarmeezacademy.com/api/v1/posts"
+const postAPI = "https://tarmeezacademy.com/api/v1/posts/"
 const loginAPI = "https://tarmeezacademy.com/api/v1/login"
 const regAPI = "https://tarmeezacademy.com/api/v1/register"
 const addPostAPI = "https://tarmeezacademy.com/api/v1/posts"
@@ -44,6 +44,8 @@ const navbar = document.getElementById('navbar');
             logOutBtn.classList.add("d-none")
             guest.classList.remove('d-none');
             profileLink.classList.add("d-none");
+                  
+
       } 
 
       const loginUI = function(){
@@ -83,7 +85,6 @@ const closeLogInModal = function(){
     userName.focus();
     document.getElementById('passwordInput').type = 'password';
     document.getElementById('togglePassword').textContent = 'Show';
-
 }
 const closeRegModal = function(){
       const registerModalEl = document.getElementById('registerModal');
@@ -152,109 +153,114 @@ const showPassword = function(){
 }
 showPassword()
 
-let currentPage = 1;
-let lastPage = null;
-let isLoading = false;
-const scrollLoader = document.getElementById("scroll-loader");
 
-// تحميل البوستات
-const getPosts = function (firstLoad = false) {
-  if (isLoading) return;
-  if (lastPage && currentPage > lastPage) return;
 
-  isLoading = true;
-  scrollLoader.style.display = firstLoad ? "none" : "block"; // 🔥 إظهار Loader الصغير لو مش أول تحميل
+// * ==========get post================= 
+const urlParams = new URLSearchParams(window.location.search);
+const postId = urlParams.get('id'); 
+const token = localStorage.getItem("token")
+let postID;
 
-  axios.get(`${postsAPI}?page=${currentPage}&limit=10`)
-    .then(response => {
-      const { data: posts, meta } = response.data;
-      lastPage = meta.last_page;
+const getPost = function() {
+  if (!postId) {
+    console.error("No postId found in URL!");
+    postsContainer.innerHTML = "<p class='text-danger'>Post not found.</p>";
+    return;
+  }
 
-      posts.forEach(post => {
-        const postHTML = `
-          <div class="card shadow rounded-4 mx-auto mb-4"  onclick="window.location.href='post.html?id=${post.id}'"  style="max-width: 90%;">
-            <div class="card-header d-flex align-items-center">
-              <img 
-                src="${post.author.profile_image || 'user-icon-icon_1076610-59410.avif'}" 
-                alt="User" 
-                class="rounded-circle me-3" 
-                width="50" 
-                height="50"
-                onerror="this.onerror=null; this.src='user-icon-icon_1076610-59410.avif';"
-              >
-              <div>
-                <h6 class="mb-0">${post.author.name}</h6>
-                <small class="text-muted">${post.created_at}</small>
-              </div>
+  axios.get(`${postAPI}${postId}`)
+    .then((res) => {
+      const post = res.data.data;
+      postID =  post.id
+      console.log(postID);
+      
+      let postHtml = `
+        <div class="card shadow rounded-4 mx-auto mb-4" style="max-width: 90%;">
+          <!-- post header -->
+          <div class="card-header d-flex align-items-center">
+            <img src="${post.author.profile_image || 'user-icon-icon_1076610-59410.avif'}" 
+                alt="User" class="rounded-circle me-3" width="50" height="50"
+                onerror="this.onerror=null; this.src='user-icon-icon_1076610-59410.avif';">
+            <div>
+              <h6 class="mb-0">${post.author.name}</h6>
+              <small class="text-muted">${post.created_at}</small>
             </div>
-
-            <div class="card-body">
-              ${post.title ? `<h5 class="card-title">${post.title}</h5>` : ""}
-              <p class="card-text">${post.body}</p>
-              ${post.image ? `
-                <img 
-                  src="${post.image}" 
-                  class="img-fluid rounded mb-3 d-block mx-auto" 
-                  alt="Post Image"
-                  onerror="this.onerror=null; this.src='/360_F_791225927_caRPPH99D6D1iFonkCRmCGzkJPf36QDw.jpg';"
-                />` : ""}
-              <button class="btn btn-primary">(${post.comments_count}) Comments</button>
+          </div>
+          <!-- post body -->
+          <div class="card-body">
+            ${post.title ? `<h5 class="card-title">${post.title}</h5>` : ""}
+            <p class="card-text">${post.body}</p>
+            ${post.image ? `<img src="${post.image}" class="img-fluid rounded mb-3 d-block mx-auto" alt="Post Image" onerror="this.onerror=null; this.src='/360_F_791225927_caRPPH99D6D1iFonkCRmCGzkJPf36QDw.jpg';" />` : ""}
+            <div class="mb-2">
               <span id="tags-${post.id}"></span>
             </div>
           </div>
-        `;
+        </div>
 
-        postsContainer.innerHTML += postHTML;
+        <!-- Comments Section -->
+        <div class="card shadow rounded-4 mx-auto" style="max-width: 90%;">
+          <div class="card-header">
+            <h6 class="mb-0">Comments (${post.comments_count})</h6>
+          </div>
+          <div class="card-body">
+            ${post.comments && post.comments.length > 0
+              ? post.comments.map(comment => `
+                <div class="d-flex mb-3">
+                  <img src="${comment.author.profile_image || 'user-icon-icon_1076610-59410.avif'}" 
+                      alt="User" class="rounded-circle me-3" width="50" height="50"
+                      onerror="this.onerror=null; this.src='user-icon-icon_1076610-59410.avif';">
+                  <div class="p-2 ps-3 pe-3 rounded shadow-sm w-100" style="background-color: #dfe1e3c1;">
+                    <strong class="mb-1 fs-5 d-block">${comment.author.name}</strong>
+                    <hr>
+                    <p class="mb-2">${comment.body}</p>
+                  </div>
+                </div>
+              `).join('')
+              : `<p class="text-muted">No comments yet.</p>`
+            }
 
-        // تحميل التاجز
-        const tagsEl = document.getElementById(`tags-${post.id}`);
-        tagsEl.innerHTML = post.tags.map(tag => `
-          <button 
-            class="btn btn-sm rounded-5" 
-            style="background-color: rgba(203, 207, 207, 1); color: rgba(56, 55, 55, 1); padding: 5px 10px;">
-            ${tag.name}
-          </button>
-        `).join('');
-      });
+            <!-- Add Comment Box -->
+            ${token ? `
+              <form id="addCommintForm">
+                <textarea id="commintBody" class="form-control mb-3" placeholder="Write a comment..." rows="2"></textarea>
+                <button type="button" class="btn btn-primary" onclick="addComment(event, ${postId})">Add Comment</button>
+              </form>
+            ` : `
+              <div class="text-center">
+                <small class="text-muted">Log in to comment</small>
+                <a href="#" class="ms-1" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
+                <span>|</span>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Register</a>
+              </div>
+            `}
+          </div>
+        </div>
+      `;
 
-      currentPage++;
+      postsContainer.innerHTML = postHtml;
 
-      // 🔥 إخفاء Preloader بعد أول تحميل
-      if (firstLoad) {
-        document.getElementById("preloader").classList.add("hidden");
-      }
+      // إضافة tags
+      const tagsEl = document.getElementById(`tags-${post.id}`);
+      tagsEl.innerHTML = post.tags.map(tag => `
+        <button class="btn btn-sm rounded-5" style="background-color: rgba(203, 207, 207, 1); color: rgba(56, 55, 55, 1); padding: 5px 10px;">
+          ${tag.name}
+        </button>
+      `).join('');
 
-    })
-    .catch(error => {
-      Swal.fire({
-        toast: true,
-        icon: 'error',
-        title: error.response?.data?.message || 'Something went wrong!',
-        position: 'top-end',
-        background: '#e47a7aff',
-        color: '#fff',
-        showConfirmButton: false,
-        timer: 5000,
-        timerProgressBar: true
-      });
-    })
-    .finally(() => {
-      isLoading = false;
-      scrollLoader.style.display = "none"; // 🔥 إخفاء Loader الصغير بعد التحميل
+      // إخفاء preloader
+      preloader.classList.add("hidden");
+
+
     });
 };
 
-// 🔥 تحميل أول صفحة Posts
-window.addEventListener("load", () => {
-  getPosts(true); // أول مرة
-});
+getPost();
 
-// 🔥 تحميل تلقائي مع Scroll
-window.addEventListener("scroll", () => {
-  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000) {
-    getPosts();
-  }
-});
+// * ==========get post================= 
+
+window.addEventListener("load", getPost);
+
+
 
 
   logInBtnModal.addEventListener("click",function(e){
@@ -280,6 +286,8 @@ window.addEventListener("scroll", () => {
       // change nav btns
 
       loginUI()
+      
+      window.location.reload();
       // alert successes
 
       Swal.fire({
@@ -334,6 +342,7 @@ logOutBtn.addEventListener("click", function () {
       localStorage.removeItem('user');
 
       logOutUI()
+      window.location.reload();
       // ✅ Toast مودرن
       Swal.fire({
         toast: true,
@@ -426,6 +435,7 @@ function dismissLoadingToast() {
       // change nav btns
 
       loginUI()
+      window.location.reload();
       // alert successes
 
       Swal.fire({
@@ -507,11 +517,7 @@ function dismissLoadingToast() {
       // close modal
       closeAddPostModal()
       
-      // render posts
-  currentPage = 1;
-  lastPage = null;
-  postsContainer.innerHTML = ""; 
-  getPosts(true);
+      window.location.href="/index.html"
 
 
       Swal.fire({
@@ -544,3 +550,72 @@ function dismissLoadingToast() {
     })
     
   })
+
+
+// todo ========== make commint request (axios) ================= 
+const addCommintAPI = `https://tarmeezacademy.com/api/v1`;
+
+// 🔹 Helper for dark toast
+function showToast(icon, title, time = 2000) {
+  Swal.fire({
+    toast: true,
+    icon,
+    title,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: time,
+    timerProgressBar: true,
+    background: '#2b2b3c', // dark background
+    color: '#fff',         // white text
+    customClass: { popup: 'small-toast' }
+  });
+}
+
+window.addComment = function (e, postId) {
+  e.preventDefault();
+
+  const commentBody = document.getElementById("commintBody");
+  if (!commentBody || !commentBody.value.trim()) {
+    showToast("warning", "Please write a comment first.");
+    return;
+  }
+
+  if (!postId) {
+    showToast("error", "Post ID is missing.");
+    return;
+  }
+
+  // Show loading
+  Swal.fire({
+    toast: true,
+    title: "Sending...",
+    position: "top-end",
+    showConfirmButton: false,
+    allowOutsideClick: false,
+    background: "#2b2b3c",
+    color: "#fff",
+    didOpen: () => Swal.showLoading()
+  });
+
+  const body = { body: commentBody.value.trim() };
+
+  axios.post(`${addCommintAPI}/posts/${postId}/comments`, body, { 
+    headers: {
+      "Accept": "application/json",
+      "Authorization": `Bearer ${token}`
+    }
+  })
+  .then((res) => {
+    Swal.close(); 
+    showToast("success", "Comment posted successfully.");
+    commentBody.value = "";
+    getPost(); 
+  })
+  .catch((err) => {
+    Swal.close();
+    showToast("error", "Failed to post comment.");
+  });
+};
+
+
+      // todo ========== make commint request (axios) ================= 
