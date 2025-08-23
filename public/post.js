@@ -23,7 +23,7 @@ import {
         postTitle,
         postBody,
         postImage,
-      }from'./constants';
+      }from'../src/constants';
 
 const postAPI = "https://tarmeezacademy.com/api/v1/posts/"
 const loginAPI = "https://tarmeezacademy.com/api/v1/login"
