@@ -159,7 +159,7 @@ showPassword()
 const urlParams = new URLSearchParams(window.location.search);
 const postId = urlParams.get('id'); 
 const token = localStorage.getItem("token")
-let postID;
+
 
 const getPost = function() {
   if (!postId) {
@@ -183,7 +183,7 @@ Swal.fire({
   axios.get(`${postAPI}${postId}`)
     .then((res) => {
       const post = res.data.data;
-      postID =  post.id
+      
       
       
       let postHtml = `
