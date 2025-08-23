@@ -440,19 +440,30 @@
         };
 
         // Navbar Scroll Effect
-        let lastScroll = 0;
-        const popDownNav = () => {
-            window.addEventListener('scroll', () => {
-                const currentScroll = window.pageYOffset;
-                if (currentScroll > lastScroll) {
-                    navbar.style.top = "-100px";
-                } else {
-                    navbar.style.top = "0";
-                }
-                lastScroll = currentScroll;
-            });
-        };
-        popDownNav();
+let lastScroll = 0;
+const popDownNav = () => {
+    // Set navbar to visible and scroll to top on page load
+    navbar.style.top = "0";
+    window.scrollTo(0, 0);
+
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+
+        if (currentScroll === 0) {
+            // Always show navbar when at the top of the page
+            navbar.style.top = "0";
+        } else if (currentScroll > lastScroll) {
+            // Scrolling down → hide navbar
+            navbar.style.top = "-100px";
+        } else {
+            // Scrolling up → show navbar
+            navbar.style.top = "0";
+        }
+
+        lastScroll = currentScroll;
+    });
+};
+popDownNav();
 
         // Password Toggle
         const showPasswordRegister = () => {
@@ -731,8 +742,12 @@
         });
 
         // Add Post
+
+        
+
         addPostSubmitBtn.addEventListener("click", (e) => {
             e.preventDefault();
+            
             const token = localStorage.getItem("token");
             function showLoadingToast() {
                 Swal.fire({
@@ -809,45 +824,67 @@
             });
         }
 
-        window.addComment = function (e, postId) {
-            e.preventDefault();
-            const commentBody = document.getElementById("commintBody");
-            if (!commentBody || !commentBody.value.trim()) {
-                showToast("warning", "Please write a comment first.");
-                return;
-            }
-            if (!postId) {
-                showToast("error", "Post ID is missing.");
-                return;
-            }
-            Swal.fire({
-                toast: true,
-                title: "Sending...",
-                position: "top-end",
-                showConfirmButton: false,
-                allowOutsideClick: false,
-                background: "#2b2b3c",
-                color: "#fff",
-                didOpen: () => Swal.showLoading()
-            });
-            const body = { body: commentBody.value.trim() };
-            axios.post(`${addCommintAPI}/posts/${postId}/comments`, body, {
-                headers: {
-                    "Accept": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }
-            })
-                .then((res) => {
-                    Swal.close();
-                    showToast("success", "Comment posted successfully.");
-                    commentBody.value = "";
-                    getPost();
-                })
-                .catch((err) => {
-                    Swal.close();
-                    showToast("error", "Failed to post comment.");
-                });
-        };
+window.addComment = function (e, postId) {
+    e.preventDefault();
+
+    // Get the button element (adjust selector as needed)
+    const commentButton = e.target.closest("button"); // Assumes the button triggered the event
+    if (!commentButton) {
+        showToast("error", "Comment button not found.");
+        return;
+    }
+
+    // Get the comment body input
+    const commentBody = document.getElementById("commintBody");
+    if (!commentBody || !commentBody.value.trim()) {
+        showToast("warning", "Please write a comment first.");
+        return;
+    }
+
+    if (!postId) {
+        showToast("error", "Post ID is missing.");
+        return;
+    }
+
+    // Disable the button immediately
+    commentButton.disabled = true;
+
+    // Show loading toast
+    Swal.fire({
+        toast: true,
+        title: "Sending...",
+        position: "top-end",
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        background: "#2b2b3c",
+        color: "#fff",
+        didOpen: () => Swal.showLoading(),
+    });
+
+    const body = { body: commentBody.value.trim() };
+
+    axios
+        .post(`${addCommintAPI}/posts/${postId}/comments`, body, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        })
+        .then((res) => {
+            Swal.close();
+            showToast("success", "Comment posted successfully.");
+            commentBody.value = "";
+            getPost();
+        })
+        .catch((err) => {
+            Swal.close();
+            showToast("error", err.response?.data?.message || "Failed to post comment.");
+        })
+        .finally(() => {
+            // Re-enable the button
+            commentButton.disabled = false;
+        });
+};
     </script>
 </body>
 </html>

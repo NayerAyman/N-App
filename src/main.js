@@ -106,21 +106,29 @@ const closeAddPostModal = function(){
 }
 
 let lastScroll = 0;
-const popDownNav =function(){
-window.addEventListener('scroll', () => {
-  const currentScroll = window.pageYOffset;
-
-  if (currentScroll > lastScroll) {
-    // التمرير للأسفل → اخفاء الـ navbar
-    navbar.style.top = "-100px";
-  } else {
-    // التمرير للأعلى → اظهار الـ navbar
+const popDownNav = () => {
+    // Set navbar to visible and scroll to top on page load
     navbar.style.top = "0";
-  }
+    window.scrollTo(0, 0);
 
-  lastScroll = currentScroll;
-});}
-popDownNav()
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+
+        if (currentScroll === 0) {
+            // Always show navbar when at the top of the page
+            navbar.style.top = "0";
+        } else if (currentScroll > lastScroll) {
+            // Scrolling down → hide navbar
+            navbar.style.top = "-100px";
+        } else {
+            // Scrolling up → show navbar
+            navbar.style.top = "0";
+        }
+
+        lastScroll = currentScroll;
+    });
+};
+popDownNav();
 
 const showPasswordRegister=function(){
   document.getElementById("rtogglePassword").addEventListener("click", function () {
@@ -172,7 +180,7 @@ const getPosts = function (firstLoad = false) {
 
       posts.forEach(post => {
         const postHTML = `
-          <div class="card shadow rounded-4 mx-auto mb-4"  onclick="window.location.href='/post.html?id=${post.id}'"  style="max-width: 90%;">
+          <div class="card shadow rounded-4 mx-auto mb-4" style="cursor: pointer;" onclick="window.location.href='/post.html?id=${post.id}'"  style="max-width: 90%;">
             <div class="card-header d-flex align-items-center">
               <img 
                 src="${post.author.profile_image || 'user-icon-icon_1076610-59410.avif'}" 
@@ -192,12 +200,12 @@ const getPosts = function (firstLoad = false) {
               ${post.title ? `<h5 class="card-title">${post.title}</h5>` : ""}
               <p class="card-text">${post.body}</p>
               ${post.image ? `
-                <img 
-                  src="${post.image}" 
-                  class="img-fluid rounded mb-3 d-block mx-auto" 
-                  alt="Post Image"
-                  onerror="this.onerror=null; this.src='/360_F_791225927_caRPPH99D6D1iFonkCRmCGzkJPf36QDw.jpg';"
-                />` : ""}
+                  <img 
+                      src="${post.image}" 
+                      class="img-fluid rounded mb-3 d-block mx-auto" 
+                      alt="Post Image"
+                      onerror="this.onerror=null; this.src='/360_F_791225927_caRPPH99D6D1iFonkCRmCGzkJPf36QDw.jpg';"
+                  />` : ""}
               <button class="btn btn-primary">(${post.comments_count}) Comments</button>
               <span id="tags-${post.id}"></span>
             </div>
@@ -240,7 +248,7 @@ const getPosts = function (firstLoad = false) {
     })
     .finally(() => {
       isLoading = false;
-      scrollLoader.style.display = "none"; // 🔥 إخفاء Loader الصغير بعد التحميل
+      scrollLoader.style.display = "none"; 
     });
 };
 
