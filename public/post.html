@@ -1,129 +1,245 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-    <link rel="icon" type="image/svg+xml" href="icon NizzyApp.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/src/style.css">
+    <link rel="icon" type="image/svg+xml" href="icon NizzyApp.png" />
     <title>N App</title>
+    
+    <!-- External CSS Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
+    <style>
+        @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css');
+        body {
+            background-color: rgb(182, 202, 213) !important;
+        }
+        
+        /* Preloader */
+        #content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+        #preloader {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        #preloader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .logo-pulse {
+            width: 80px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); }
+        }
+        
+        /* Guest Badge */
+        .guest-badge {
+            position: fixed;
+            bottom: 15px;
+            right: 17px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            color: #fff;
+            background: rgba(20,20,28,.9);
+            box-shadow: 0 6px 20px rgba(0,0,0,.25);
+            backdrop-filter: saturate(150%) blur(6px);
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(-6px);
+            pointer-events: none;
+            animation: guestIn .35s ease forwards;
+        }
+        @keyframes guestIn {
+            to { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        }
+        .hidden { display: none; }
+        .show { display: inline; }
+        .guest-badge::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            box-shadow: 0 0 0 0 rgba(78,154,241,.5);
+            animation: pulse 2.4s ease-out infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(78,154,241,.55); }
+            70% { box-shadow: 0 0 0 12px transparent; }
+            100% { box-shadow: 0 0 0 0 transparent; }
+        }
+        @media (prefers-color-scheme: light) {
+            .guest-badge { background: rgba(255,255,255,.9); color: #111; }
+        }
+        .guest-badge.hidden {
+            opacity: 0;
+            transform: translateY(-6px);
+            pointer-events: none;
+            transition: all .25s ease;
+        }
+        
+        /* Navbar */
+        #navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            transition: top 0.3s;
+        }
+        
+        /* Form Inputs */
+        .form-control:focus {
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+            border-color: #0d6efd;
+            transition: all 0.3s;
+        }
+        input:focus, input:hover, textarea:focus, textarea:hover {
+            background-color: rgba(229, 232, 233, 0.588) !important;
+        }
+        
+        /* Modal Animation */
+        .modal.fade .modal-dialog {
+            transition: transform 0.3s ease-out;
+            transform: translateY(-50px);
+        }
+        .modal.fade.show .modal-dialog {
+            transform: translateY(0);
+        }
+        
+        /* Add Post Button */
+        #fabAddPost {
+            transition: transform .18s ease, box-shadow .18s ease;
+        }
+        #fabAddPost:hover {
+            transform: translateY(-2px) scale(1.05);
+        }
+        #fabAddPost:active {
+            transform: translateY(0) scale(0.98);
+        }
+        #fabAddPost::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 9999px;
+            box-shadow: 0 0 0 0 rgba(122,92,255,.25);
+            animation: fab-pulse 2.2s ease-out infinite;
+            pointer-events: none;
+        }
+        @keyframes fab-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(122,92,255,.28); }
+            70% { box-shadow: 0 0 0 18px rgba(122,92,255,0); }
+            100% { box-shadow: 0 0 0 0 rgba(122,92,255,0); }
+        }
+        
+        /* Posts Container */
+        #posts-container {
+            margin-top: 5.5rem;
+        }
+        .card {
+            margin-top: 8px;
+        }
+        
+        /* Toast */
+        .small-toast {
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            min-width: auto;
+        }
+    </style>
 </head>
-
 <body>
-    <!-- //* starting logo */ -->
+    <!-- Preloader -->
     <div id="preloader">
-    <img src="/public/icon NizzyApp.png" alt="Loading..." class="logo-pulse">
-  </div>
+        <img src="/icon NizzyApp.png" alt="Loading..." class="logo-pulse">
+    </div>
 
-    <!-- //* starting logo */ -->
-    <!-- modals -->
-
-    <!-- & add post modal -->
-
+    <!-- Add Post Modal -->
     <div class="modal fade" id="addPostModal" tabindex="-1" aria-labelledby="addPostModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 shadow-lg border-0">
-
-                <!-- Header -->
                 <div class="modal-header border-0">
                     <h5 class="modal-title fw-bold" id="addPostModalLabel">Create New Post</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
-                <!-- Body -->
                 <div class="modal-body">
                     <form id="addPostForm" class="needs-validation" novalidate enctype="multipart/form-data">
-
                         <div class="mb-3">
                             <label for="postTitle" class="form-label fw-semibold">Post Title</label>
-                            <input type="text" class="form-control rounded-3" id="postTitle"
-                                placeholder="Enter your post title" required>
+                            <input type="text" class="form-control rounded-3" id="postTitle" placeholder="Enter your post title" required>
                         </div>
-
                         <div class="mb-3">
                             <label for="postBody" class="form-label fw-semibold">Post Content</label>
-                            <textarea class="form-control rounded-3" id="postBody" rows="4"
-                                placeholder="Write something..." required></textarea>
+                            <textarea class="form-control rounded-3" id="postBody" rows="4" placeholder="Write something..." required></textarea>
                         </div>
-
                         <div class="mb-3">
                             <label for="postImage" class="form-label fw-semibold">Attach Image (optional)</label>
                             <input type="file" class="form-control rounded-3" id="postImage" accept="image/*">
                         </div>
-
                         <div class="d-grid">
-                            <button id="add-post-submit" type="submit"
-                                class="btn btn-primary rounded-3 fw-semibold shadow-sm">
-                                Publish Post
-                            </button>
+                            <button id="add-post-submit" type="submit" class="btn btn-primary rounded-3 fw-semibold shadow-sm">Publish Post</button>
                         </div>
-
                     </form>
                 </div>
-
             </div>
         </div>
     </div>
-    <!-- & add post modal //-->
 
-
-    <!--& Register Modal -->
-
+    <!-- Register Modal -->
     <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content rounded-4 shadow-lg border-0">
-
-                <!-- Header -->
                 <div class="modal-header border-0 bg-primary text-white rounded-top-4">
-                    <h5 class="modal-title fw-bold">
-                        <i class="bi bi-person-plus-fill me-2"></i> Create Account
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                    <h5 class="modal-title fw-bold"><i class="bi bi-person-plus-fill me-2"></i> Create Account</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
-                <!-- Body -->
                 <div class="modal-body p-4">
                     <form id="registerForm" class="needs-validation" novalidate>
                         <div class="row g-3">
-
-                            <!-- Full Name -->
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Name</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                    <input id="reg-name" type="text" class="form-control" placeholder="John Doe"
-                                        required>
+                                    <input id="reg-name" type="text" class="form-control" placeholder="John Doe" required>
                                 </div>
                             </div>
-
-                            <!-- Username -->
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Username</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-at"></i></span>
-                                    <input id="reg-user-name" type="text" class="form-control" placeholder="@username"
-                                        required>
+                                    <input id="reg-user-name" type="text" class="form-control" placeholder="@username" required>
                                 </div>
                             </div>
-
-
-                            <!-- Password -->
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Password</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                    <input type="password" id="reg-Password" class="form-control" placeholder="••••••"
-                                        required>
+                                    <input type="password" id="reg-Password" class="form-control" placeholder="••••••" required>
                                     <button class="btn btn-outline-secondary" type="button" id="rtogglePassword">
                                         <i class="bi bi-eye"></i>
                                     </button>
                                 </div>
                             </div>
-
-                            <!-- Profile Photo -->
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Profile Photo</label>
                                 <input id="reg-photo" class="form-control" type="file" accept="image/*">
@@ -131,219 +247,607 @@
                         </div>
                     </form>
                 </div>
-
-                <!-- Footer -->
                 <div class="modal-footer border-0 d-flex justify-content-between">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
                     <button id="reg-sbmit" type="submit" form="registerForm" class="btn btn-primary">
                         <i class="bi bi-person-check me-1"></i> Register
                     </button>
                 </div>
-
             </div>
         </div>
     </div>
 
-    <!--& register Modal -->
-
-    <!--&login Modal -->
-<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-4 shadow-lg">
-      <div class="modal-header border-0">
-        <h5 class="modal-title" id="loginModalLabel">Log In</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="loginForm">
-          <!-- Email -->
-          <div class="mb-3">
-            <label for="emailInput" class="form-label">User Name</label>
-            <input type="text" class="form-control form-control-lg rounded-pill" id="emailInput"
-              placeholder="Enter your email" required>
-          </div>
-
-          <!-- Password -->
-          <div class="mb-3 position-relative">
-            <label for="passwordInput" class="form-label">Password</label>
-            <input type="password" class="form-control form-control-lg rounded-pill" id="passwordInput"
-              placeholder="Enter your password" required>
-
-            <button type="button" style="top:55px;"
-              class="btn btn-sm position-absolute end-0 translate-middle-y me-3" id="togglePassword">
-              Show
-            </button>
-          </div>
-
-          <!-- Submit -->
-          <div class="d-grid mb-3">
-            <button type="submit" id="btn-login" class="btn btn-primary btn-lg rounded-pill">Log In</button>
-          </div>
-
-          <!-- 🔥 Added this -->
-          <div class="text-center">
-            <small class="text-muted">Don't have an account? 
-              <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal" class="fw-bold text-primary">
-                Register
-              </a>
-            </small>
-          </div>
-          <!-- 🔥 End -->
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-    <!--&login modal  -->
-
-
-    <!--/ // modals // -->
-
-
-
-    <!--* nav bar -->
-    <div id="navbar" class="container shadow rounded-4  bg-white my-2" ">
-    <!-- nav bar -->
-    <nav class=" navbar navbar-expand-lg navbar-light style="max-width: 100%; shadow rounded-4">
-        <div class="container">
-            <!-- Logo -->
-            <a class="navbar-brand" href="/index.html">
-                <img src="/icon NizzyApp.png" alt="Logo" width="40">
-            </a>
-
-            <!-- Hamburger button for mobile -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <!-- Navigation links -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item activ">
-                        <a style="font-size: large ; font-weight: 700 ; " class="nav-link " href="/index.html">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
-                                class="bi bi-house-door-fill" viewBox="0 0 16 20">
-
-                                <path
-                                    d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5" />
-                            </svg>
-                            Home</a>
-                    </li>
-                    <li id="Profile" style="font-size: large ; font-weight: 700 ;" class="nav-item">
-                        <a class="nav-link d-flex align-items-center gap-2" href="#">
-                            <img id="userPhoto" src="user-icon-icon_1076610-59410.avif" alt="User Photo"
-                                class="rounded-circle" width="30" height="30">
-                            <span id="userName">Profile</span>
-                        </a>
-                    </li>
-
-                </ul>
-
-                <!-- Two buttons on the right -->
-                <div class="d-flex">
-                    <button id="btn-register" style="font-weight: 600;" class="btn btn-outline-primary me-2"
-                        data-bs-toggle="modal" data-bs-target="#registerModal">register</button>
-                    <button id="btn-log-in-nav" style="font-weight: 600;" class="btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#loginModal">Login</button>
-                    <button id="btn-logout" style="font-weight: 600;" class="btn btn-danger me-2 d-none">
-                        Logout
-                    </button>
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 shadow-lg">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="loginModalLabel">Log In</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="emailInput" class="form-label">User Name</label>
+                            <input type="text" class="form-control form-control-lg rounded-pill" id="emailInput" placeholder="Enter your email" required>
+                        </div>
+                        <div class="mb-3 position-relative">
+                            <label for="passwordInput" class="form-label">Password</label>
+                            <input type="password" class="form-control form-control-lg rounded-pill" id="passwordInput" placeholder="Enter your password" required>
+                            <button type="button" style="top:55px;" class="btn btn-sm position-absolute end-0 translate-middle-y me-3" id="togglePassword">Show</button>
+                        </div>
+                        <div class="d-grid mb-3">
+                            <button type="submit" id="btn-login" class="btn btn-primary btn-lg rounded-pill">Log In</button>
+                        </div>
+                        <div class="text-center">
+                            <small class="text-muted">Don't have an account? 
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal" class="fw-bold text-primary">Register</a>
+                            </small>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Navbar -->
+    <div id="navbar" class="container shadow rounded-4 bg-white my-2">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container">
+                <a class="navbar-brand" href="/index.html">
+                    <img src="/icon NizzyApp.png" alt="Logo" width="40">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item activ">
+                            <a style="font-size: large; font-weight: 700;" class="nav-link" href="/index.html">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-house-door-fill" viewBox="0 0 16 20">
+                                    <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5"/>
+                                </svg> Home
+                            </a>
+                        </li>
+                        <li id="Profile" style="font-size: large; font-weight: 700;" class="nav-item">
+                            <a class="nav-link d-flex align-items-center gap-2" href="#">
+                                <img id="userPhoto" src="user-icon-icon_1076610-59410.avif" alt="User Photo" class="rounded-circle" width="30" height="30">
+                                <span id="userName">Profile</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="d-flex">
+                        <button id="btn-register" style="font-weight: 600;" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#registerModal">register</button>
+                        <button id="btn-log-in-nav" style="font-weight: 600;" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+                        <button id="btn-logout" style="font-weight: 600;" class="btn btn-danger me-2 d-none">Logout</button>
+                    </div conversio-div>
+                </div>
+            </div>
         </nav>
-
-        <!-- / / nav bar// -->
     </div>
-    <!--*/ / nav bar // -->
 
-    <!-- 🔹 Main Content -->
-    <main id="posts-container" class="container" style="margin-top: 6rem;">
-        <!-- Post Card -->
-        <div class="card shadow rounded-4 mx-auto mb-4" data-id="${postId}" style="max-width: 90%;">
-            <div class="card-header d-flex align-items-center">
-                <img src="user-icon-icon_1076610-59410.avif" alt="User" class="rounded-circle me-3" width="50"
-                    height="50">
-                <div>
-                    <h6 class="mb-0">Author Name</h6>
-                    <small class="text-muted">2025-08-23</small>
-                </div>
-            </div>
-            <div class="card-body">
-                <h5 class="card-title">Post Title</h5>
-                <p class="card-text">This is the body of the post. It’s a longer text to describe the post details.</p>
-                <img src="360_F_791225927_caRPPH99D6D1iFonkCRmCGzkJPf36QDw.jpg"
-                    class="img-fluid rounded mb-3 d-block mx-auto" alt="Post Image">
-                <div class="mb-2">
-                    <span class="badge bg-secondary">Tag1</span>
-                    <span class="badge bg-secondary">Tag2</span>
-                </div>
-            </div>
-        </div>
+    <!-- Main Content -->
+    <main id="posts-container" class="container" style="margin-top: 6rem;"></main>
 
-        <!-- Comments Section -->
-        <div class="card shadow rounded-4 mx-auto" style="max-width: 90%;">
-            <div class="card-header">
-                <h6 class="mb-0">Comments (3)</h6>
-            </div>
-            <div class="card-body">
-                <!-- Single Comment -->
-                <div class="d-flex mb-3">
-                    <img src="user-icon-icon_1076610-59410.avif" alt="User" class="rounded-circle me-3" width="40"
-                        height="40">
-                    <div class="bg-light p-3 rounded shadow-sm w-100">
-                        <strong>User 1</strong>
-                        <p class="mb-0">This is a comment text.</p>
-                    </div>
-                </div>
-
-
-                <!-- Add Comment Box -->
-                <form>
-                    <textarea class="form-control mb-3" placeholder="Write a comment..." rows="2"></textarea>
-                    <button id="add-commint-btn" class="btn btn-primary">Add Comment</button>
-                </form>
-            </div>
-        </div>
-    </main>
-
-
-    <!-- * add post btn -->
-
+    <!-- Add Post Button -->
     <button id="fabAddPost" type="button" class="btn btn-primary rounded-circle position-fixed d-none" style="
-    width:64px; height:64px;
-    right:1rem; bottom:1rem; z-index:1080;
-    background: linear-gradient(135deg, #5865f2, #7a5cff);
-    box-shadow: 0 10px 25px rgba(88,101,242,.35);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-  " data-bs-toggle="modal" data-bs-target="#addPostModal" aria-label="Add Post">
+        width:64px; height:64px; right:1rem; bottom:1rem; z-index:1080;
+        background: linear-gradient(135deg, #5865f2, #7a5cff);
+        box-shadow: 0 10px 25px rgba(88,101,242,.35);
+        display: flex; align-items: center; justify-content: center; padding: 0;"
+        data-bs-toggle="modal" data-bs-target="#addPostModal" aria-label="Add Post">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
             <path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.2" stroke-linecap="round" />
         </svg>
     </button>
 
-
-
-
-    <!-- * add post btn -->
-
-
-    <!-- * Guest Badge -->
-
+    <!-- Guest Badge -->
     <div id="guestBadge" class="guest-badge" aria-label="Guest user" title="Guest">
-        <!-- SVG ضيف بسيط -->
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-            <path fill="currentColor"
-                d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.42 0-8 2.239-8 5v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-2.761-3.58-5-8-5Z" />
+            <path fill="currentColor" d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.42 0-8 2.239-8 5v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-2.761-3.58-5-8-5Z" />
         </svg>
     </div>
-    <!-- * Guest Badge -->
 
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script type="module">
+        // Constants
+        const logInBtnModal = document.getElementById('btn-login');
+        const userName = document.getElementById('emailInput');
+        const password = document.getElementById('passwordInput');
+        const logOutBtn = document.getElementById('btn-logout');
+        const registerBtnNav = document.getElementById('btn-register');
+        const logInBtnNav = document.getElementById('btn-log-in-nav');
+        const addPostBtn = document.getElementById('fabAddPost');
+        const regSubmitBtn = document.getElementById('reg-sbmit');
+        const regUserNameInput = document.getElementById('reg-user-name');
+        const regPasswordInput = document.getElementById('reg-Password');
+        const regnameInput = document.getElementById('reg-name');
+        const regPhotoInput = document.getElementById('reg-photo');
+        const addPostSubmitBtn = document.getElementById('add-post-submit');
+        const postTitle = document.getElementById('postTitle');
+        const postBody = document.getElementById('postBody');
+        const postImage = document.getElementById('postImage');
+        const postsContainer = document.getElementById('posts-container');
+        const navbar = document.getElementById('navbar');
+        const guest = document.getElementById('guestBadge');
+        const profileLink = document.getElementById('Profile');
+        const preloader = document.getElementById('preloader');
 
-    <script type="module" src="post.js"></script>
+        const postAPI = "https://tarmeezacademy.com/api/v1/posts/";
+        const loginAPI = "https://tarmeezacademy.com/api/v1/login";
+        const regAPI = "https://tarmeezacademy.com/api/v1/register";
+        const addPostAPI = "https://tarmeezacademy.com/api/v1/posts";
+        const addCommintAPI = "https://tarmeezacademy.com/api/v1";
+
+        // UI Functions
+        const logOutUI = () => {
+            if (addPostBtn) addPostBtn.classList.add('d-none');
+            registerBtnNav.classList.remove('d-none');
+            logInBtnNav.classList.remove('d-none');
+            logOutBtn.classList.add("d-none");
+            guest.classList.remove('d-none');
+            profileLink.classList.add("d-none");
+        };
+
+        const loginUI = () => {
+            const user = JSON.parse(localStorage.getItem("user"));
+            registerBtnNav.classList.add("d-none");
+            logInBtnNav.classList.add("d-none");
+            logOutBtn.classList.remove('d-none');
+            addPostBtn.classList.remove("d-none");
+            addPostBtn.classList.add("d-flex");
+            guest.classList.add('d-none');
+            profileLink.classList.remove("d-none");
+            const userPhoto = document.getElementById("userPhoto");
+            userPhoto.src = user.profile_image || "user-icon-icon_1076610-59410.avif";
+            userPhoto.onerror = () => {
+                userPhoto.src = "user-icon-icon_1076610-59410.avif";
+            };
+            document.getElementById("userName").textContent = user.name;
+        };
+
+        const closeLogInModal = () => {
+            const loginModalEl = document.getElementById('loginModal');
+            const modal = bootstrap.Modal.getInstance(loginModalEl) || new bootstrap.Modal(loginModalEl);
+            modal.hide();
+            userName.value = "";
+            password.value = "";
+            userName.focus();
+            document.getElementById('passwordInput').type = 'password';
+            document.getElementById('togglePassword').textContent = 'Show';
+        };
+
+        const closeRegModal = () => {
+            const registerModalEl = document.getElementById('registerModal');
+            const modal = bootstrap.Modal.getInstance(registerModalEl) || new bootstrap.Modal(registerModalEl);
+            modal.hide();
+            regUserNameInput.value = "";
+            regPasswordInput.value = "";
+            regnameInput.value = "";
+            regnameInput.focus();
+        };
+
+        const closeAddPostModal = () => {
+            const addPostModalEl = document.getElementById('addPostModal');
+            const modal = bootstrap.Modal.getInstance(addPostModalEl) || new bootstrap.Modal(addPostModalEl);
+            modal.hide();
+            postBody.value = "";
+            postTitle.value = "";
+            postTitle.focus();
+        };
+
+        // Navbar Scroll Effect
+        let lastScroll = 0;
+        const popDownNav = () => {
+            window.addEventListener('scroll', () => {
+                const currentScroll = window.pageYOffset;
+                if (currentScroll > lastScroll) {
+                    navbar.style.top = "-100px";
+                } else {
+                    navbar.style.top = "0";
+                }
+                lastScroll = currentScroll;
+            });
+        };
+        popDownNav();
+
+        // Password Toggle
+        const showPasswordRegister = () => {
+            document.getElementById("rtogglePassword").addEventListener("click", function () {
+                const passwordInput = document.getElementById("reg-Password");
+                const icon = this.querySelector("i");
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    icon.classList.remove("bi-eye");
+                    icon.classList.add("bi-eye-slash");
+                } else {
+                    passwordInput.type = "password";
+                    icon.classList.remove("bi-eye-slash");
+                    icon.classList.add("bi-eye");
+                }
+            });
+        };
+        showPasswordRegister();
+
+        const showPassword = () => {
+            const togglePassword = document.getElementById("togglePassword");
+            const passwordInput = document.getElementById("passwordInput");
+            togglePassword.addEventListener("click", () => {
+                const isPassword = passwordInput.type === "password";
+                passwordInput.type = isPassword ? "text" : "password";
+                togglePassword.textContent = isPassword ? "Hide" : "Show";
+            });
+        };
+        showPassword();
+
+        // Get Post
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('id');
+        const token = localStorage.getItem("token");
+
+        const getPost = () => {
+            if (!postId) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "No postId found in URL!",
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    background: "#333",
+                    color: "#fff"
+                });
+                postsContainer.innerHTML = "<p class='text-danger'>Post not found.</p>";
+                return;
+            }
+
+            axios.get(`${postAPI}${postId}`)
+                .then((res) => {
+                    const post = res.data.data;
+                    let postHtml = `
+                        <div class="card shadow rounded-4 mx-auto mb-4" style="max-width: 90%;">
+                            <div class="card-header d-flex align-items-center">
+                                <img src="${post.author.profile_image || 'user-icon-icon_1076610-59410.avif'}" 
+                                    alt="User" class="rounded-circle me-3" width="50" height="50"
+                                    onerror="this.onerror=null; this.src='user-icon-icon_1076610-59410.avif';">
+                                <div>
+                                    <h6 class="mb-0">${post.author.name}</h6>
+                                    <small class="text-muted">${post.created_at}</small>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                ${post.title ? `<h5 class="card-title">${post.title}</h5>` : ""}
+                                <p class="card-text">${post.body}</p>
+                                ${post.image ? `<img src="${post.image}" class="img-fluid rounded mb-3 d-block mx-auto" alt="Post Image" onerror="this.onerror=null; this.src='/360_F_791225927_caRPPH99D6D1iFonkCRmCGzkJPf36QDw.jpg';" />` : ""}
+                                <div class="mb-2">
+                                    <span id="tags-${post.id}"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card shadow rounded-4 mx-auto" style="max-width: 90%;">
+                            <div class="card-header">
+                                <h6 class="mb-0">Comments (${post.comments_count})</h6>
+                            </div>
+                            <div class="card-body">
+                                ${post.comments && post.comments.length > 0
+                                    ? post.comments.map(comment => `
+                                        <div class="d-flex mb-3">
+                                            <img src="${comment.author.profile_image || 'user-icon-icon_1076610-59410.avif'}" 
+                                                alt="User" class="rounded-circle me-3" width="50" height="50"
+                                                onerror="this.onerror=null; this.src='user-icon-icon_1076610-59410.avif';">
+                                            <div class="p-2 ps-3 pe-3 rounded shadow-sm w-100" style="background-color: #dfe1e3c1;">
+                                                <strong class="mb-1 fs-5 d-block">${comment.author.name}</strong>
+                                                <hr>
+                                                <p class="mb-2">${comment.body}</p>
+                                            </div>
+                                        </div>
+                                    `).join('')
+                                    : `<p class="text-muted">No comments yet.</p>`
+                                }
+                                ${token ? `
+                                    <form id="addCommintForm">
+                                        <textarea id="commintBody" class="form-control mb-3" placeholder="Write a comment..." rows="2"></textarea>
+                                        <button type="button" class="btn btn-primary" onclick="addComment(event, ${postId})">Add Comment</button>
+                                    </form>
+                                ` : `
+                                    <div class="text-center">
+                                        <small class="text-muted">Log in to comment</small>
+                                        <a href="#" class="ms-1" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
+                                        <span>|</span>
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Register</a>
+                                    </div>
+                                `}
+                            </div>
+                        </div>
+                    `;
+                    postsContainer.innerHTML = postHtml;
+                    const tagsEl = document.getElementById(`tags-${post.id}`);
+                    tagsEl.innerHTML = post.tags.map(tag => `
+                        <button class="btn btn-sm rounded-5" style="background-color: rgba(203, 207, 207, 1); color: rgba(56, 55, 55, 1); padding: 5px 10px;">
+                            ${tag.name}
+                        </button>
+                    `).join('');
+                    preloader.classList.add("hidden");
+                });
+        };
+
+        window.addEventListener("load", getPost);
+
+        // Login
+        logInBtnModal.addEventListener("click", (e) => {
+            e.preventDefault();
+            let config = {
+                username: userName.value,
+                password: password.value
+            };
+            axios.post(loginAPI, config)
+                .then((res) => {
+                    const token = res.data.token;
+                    const user = JSON.stringify(res.data.user);
+                    localStorage.setItem("token", token);
+                    localStorage.setItem("user", user);
+                    closeLogInModal();
+                    loginUI();
+                    window.location.reload();
+                    Swal.fire({
+                        toast: true,
+                        icon: 'success',
+                        title: 'Logged in',
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        background: '#333',
+                        color: '#fff',
+                        customClass: { popup: 'small-toast' }
+                    });
+                })
+                .catch(err => {
+                    Swal.fire({
+                        toast: true,
+                        icon: 'error',
+                        title: err.response?.data?.message || 'Something went wrong!',
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 5000,
+                        timerProgressBar: true
+                    });
+                });
+        });
+
+        // Logout
+        logOutBtn.addEventListener("click", () => {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to log out?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, log out',
+                cancelButtonText: 'Cancel',
+                background: '#1e1e2f',
+                color: '#fff',
+                confirmButtonColor: '#4e9af1',
+                cancelButtonColor: '#f44336',
+                showClass: { popup: 'animate__animated animate__fadeInDown' },
+                hideClass: { popup: 'animate__animated animate__fadeOutUp' }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    logOutUI();
+                    window.location.reload();
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Logged out successfully',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        background: '#2b2b3c',
+                        color: '#fff',
+                        customClass: { popup: 'animate__animated animate__fadeInUp small-toast' }
+                    });
+                }
+            });
+        });
+
+        // Setup UI
+        const setUpUI = () => {
+            const token = localStorage.getItem("token");
+            if (token) {
+                loginUI();
+            } else {
+                logOutUI();
+            }
+        };
+        setUpUI();
+
+        // Register
+        regSubmitBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            function showLoadingToast() {
+                Swal.fire({
+                    title: 'Loading...',
+                    text: 'Please wait',
+                    toast: true,
+                    position: 'top-end',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    didOpen: () => Swal.showLoading()
+                });
+            }
+            function dismissLoadingToast() {
+                Swal.close();
+            }
+            let formData = new FormData();
+            formData.append("username", regUserNameInput.value);
+            formData.append("password", regPasswordInput.value);
+            formData.append("name", regnameInput.value);
+            if (regPhotoInput.files[0]) {
+                formData.append("image", regPhotoInput.files[0]);
+            }
+            showLoadingToast();
+            regSubmitBtn.disabled = true;
+            axios.post(regAPI, formData, {
+                headers: { "Content-Type": "multipart/form-data" }
+            })
+                .then((res) => {
+                    const token = res.data.token;
+                    const user = JSON.stringify(res.data.user);
+                    localStorage.setItem("token", token);
+                    localStorage.setItem("user", user);
+                    closeRegModal();
+                    loginUI();
+                    window.location.reload();
+                    Swal.fire({
+                        toast: true,
+                        icon: 'success',
+                        title: 'New User Register Success',
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        background: '#333',
+                        color: '#fff',
+                        customClass: { popup: 'small-toast' }
+                    });
+                })
+                .catch(err => {
+                    Swal.fire({
+                        toast: true,
+                        icon: 'error',
+                        title: err.response?.data?.message || 'Something went wrong!',
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 5000,
+                        timerProgressBar: true
+                    });
+                }).finally(() => {
+                    dismissLoadingToast();
+                    regSubmitBtn.disabled = false;
+                });
+        });
+
+        // Add Post
+        addPostSubmitBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem("token");
+            function showLoadingToast() {
+                Swal.fire({
+                    title: 'Loading...',
+                    text: 'Please wait',
+                    toast: true,
+                    position: 'top-end',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    didOpen: () => Swal.showLoading()
+                });
+            }
+            function dismissLoadingToast() {
+                Swal.close();
+            }
+            let formData = new FormData();
+            formData.append("title", postTitle.value);
+            formData.append("body", postBody.value);
+            if (postImage.files[0]) {
+                formData.append("image", postImage.files[0]);
+            }
+            showLoadingToast();
+            addPostSubmitBtn.disabled = true;
+            axios.post(addPostAPI, formData, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data"
+                }
+            })
+                .then((res) => {
+                    closeAddPostModal();
+                    window.location.href = "/index.html";
+                    Swal.fire({
+                        toast: true,
+                        icon: 'success',
+                        title: 'New Post Created Successfully',
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        background: '#333',
+                        color: '#fff',
+                        customClass: { popup: 'small-toast' }
+                    });
+                })
+                .catch(err => {
+                    Swal.fire({
+                        toast: true,
+                        icon: 'error',
+                        title: err.response?.data?.message || 'Something went wrong!',
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 5000,
+                        timerProgressBar: true
+                    });
+                }).finally(() => {
+                    addPostSubmitBtn.disabled = false;
+                    dismissLoadingToast();
+                });
+        });
+
+        // Add Comment
+        function showToast(icon, title, time = 2000) {
+            Swal.fire({
+                toast: true,
+                icon,
+                title,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: time,
+                timerProgressBar: true,
+                background: '#2b2b3c',
+                color: '#fff',
+                customClass: { popup: 'small-toast' }
+            });
+        }
+
+        window.addComment = function (e, postId) {
+            e.preventDefault();
+            const commentBody = document.getElementById("commintBody");
+            if (!commentBody || !commentBody.value.trim()) {
+                showToast("warning", "Please write a comment first.");
+                return;
+            }
+            if (!postId) {
+                showToast("error", "Post ID is missing.");
+                return;
+            }
+            Swal.fire({
+                toast: true,
+                title: "Sending...",
+                position: "top-end",
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                background: "#2b2b3c",
+                color: "#fff",
+                didOpen: () => Swal.showLoading()
+            });
+            const body = { body: commentBody.value.trim() };
+            axios.post(`${addCommintAPI}/posts/${postId}/comments`, body, {
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            })
+                .then((res) => {
+                    Swal.close();
+                    showToast("success", "Comment posted successfully.");
+                    commentBody.value = "";
+                    getPost();
+                })
+                .catch((err) => {
+                    Swal.close();
+                    showToast("error", "Failed to post comment.");
+                });
+        };
+    </script>
 </body>
-
 </html>
