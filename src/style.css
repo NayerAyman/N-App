@@ -170,3 +170,7 @@ textarea:focus, textarea:hover{
   background-color: rgba(180, 223, 248, 0.588) !important;
   
 }
+
+#scroll-loader {
+  display: none;
+}

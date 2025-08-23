@@ -25,7 +25,7 @@ import {
         postImage,
       }from'./constants';
 
-const postsAPI = "https://tarmeezacademy.com/api/v1/posts?limit=50"
+const postsAPI = "https://tarmeezacademy.com/api/v1/posts"
 const loginAPI = "https://tarmeezacademy.com/api/v1/login"
 const regAPI = "https://tarmeezacademy.com/api/v1/register"
 const addPostAPI = "https://tarmeezacademy.com/api/v1/posts"
@@ -152,93 +152,109 @@ const showPassword = function(){
 }
 showPassword()
 
+let currentPage = 1;
+let lastPage = null;
+let isLoading = false;
+const scrollLoader = document.getElementById("scroll-loader");
 
-// get posts
-const getPosts=function(){axios.get(`${postsAPI}`)
-  .then(response => {
-    const posts = response.data.data;
+// تحميل البوستات
+const getPosts = function (firstLoad = false) {
+  if (isLoading) return;
+  if (lastPage && currentPage > lastPage) return;
 
-    postsContainer.innerHTML=""
-    posts.forEach(post => {
-      // HTML لكل منشور
-      const postHTML = `
-                
-          <div class="card shadow rounded-4 mx-auto" style="max-width: 90%;">
-            
+  isLoading = true;
+  scrollLoader.style.display = firstLoad ? "none" : "block"; // 🔥 إظهار Loader الصغير لو مش أول تحميل
+
+  axios.get(`${postsAPI}?page=${currentPage}&limit=10`)
+    .then(response => {
+      const { data: posts, meta } = response.data;
+      lastPage = meta.last_page;
+
+      posts.forEach(post => {
+        const postHTML = `
+          <div class="card shadow rounded-4 mx-auto mb-4" style="max-width: 90%;">
             <div class="card-header d-flex align-items-center">
-                  <img 
-                  src="${post.author.profile_image || 'user-icon-icon_1076610-59410.avif'}" 
-                  alt="User" 
-                  class="rounded-circle me-3" 
-                  width="50" 
-                  height="50"
-                  onerror="this.onerror=null; this.src='user-icon-icon_1076610-59410.avif';"
-                >
-                
+              <img 
+                src="${post.author.profile_image || 'user-icon-icon_1076610-59410.avif'}" 
+                alt="User" 
+                class="rounded-circle me-3" 
+                width="50" 
+                height="50"
+                onerror="this.onerror=null; this.src='user-icon-icon_1076610-59410.avif';"
+              >
               <div>
                 <h6 class="mb-0">${post.author.name}</h6>
                 <small class="text-muted">${post.created_at}</small>
               </div>
             </div>
 
-            
             <div class="card-body">
-            ${post.title?`<h5 class="card-title">${post.title}</h5>`:""}
-              
-
-              <p class="card-text">
-                ${post.body}
-              </p>
-
-              <img 
-              src="${post.image || '/360_F_791225927_caRPPH99D6D1iFonkCRmCGzkJPf36QDw.jpg'}" 
-              class="img-fluid rounded mb-3 d-block mx-auto " 
-              alt="Post Image"
-              onerror="this.onerror=null; this.src='/360_F_791225927_caRPPH99D6D1iFonkCRmCGzkJPf36QDw.jpg';"
-              />
-
-              <button class="btn btn-primary"> <span>( ${post.comments_count} ) </span> Comments</button>
-              <span id="tags-place-${post.id}">
-
-              </span>
+              ${post.title ? `<h5 class="card-title">${post.title}</h5>` : ""}
+              <p class="card-text">${post.body}</p>
+              ${post.image ? `
+                <img 
+                  src="${post.image}" 
+                  class="img-fluid rounded mb-3 d-block mx-auto" 
+                  alt="Post Image"
+                  onerror="this.onerror=null; this.src='/360_F_791225927_caRPPH99D6D1iFonkCRmCGzkJPf36QDw.jpg';"
+                />` : ""}
+              <button class="btn btn-primary">(${post.comments_count}) Comments</button>
+              <span id="tags-${post.id}"></span>
             </div>
           </div>
-      `;
+        `;
 
-      postsContainer.innerHTML += postHTML;
+        postsContainer.innerHTML += postHTML;
 
-      const currentPostTagsId = `tags-place-${post.id}`
-      document.getElementById(currentPostTagsId).innerHTML=""
-      for(tag of post.tags){
-        let tagHtml=`
-        <button class="btn btn-sm rounded-5 " style="background-color: rgba(203, 207, 207, 1);color: rgba(56, 55, 55, 1); padding-right: 10px; padding-left: 10px; padding-bottom: 6px; "  > ${tag.name} </button>
-        `
-        document.getElementById(currentPostTagsId).innerHTML+=tagHtml
+        // تحميل التاجز
+        const tagsEl = document.getElementById(`tags-${post.id}`);
+        tagsEl.innerHTML = post.tags.map(tag => `
+          <button 
+            class="btn btn-sm rounded-5" 
+            style="background-color: rgba(203, 207, 207, 1); color: rgba(56, 55, 55, 1); padding: 5px 10px;">
+            ${tag.name}
+          </button>
+        `).join('');
+      });
+
+      currentPage++;
+
+      // 🔥 إخفاء Preloader بعد أول تحميل
+      if (firstLoad) {
+        document.getElementById("preloader").classList.add("hidden");
       }
-    });
-      const preloader = document.getElementById("preloader");;
 
-      preloader.classList.add("hidden");
     })
     .catch(error => {
-      // ✅ خطأ: برضه نخفي الـ preloader عشان ما يعلقش
-      document.getElementById("preloader").classList.add("hidden");
-
       Swal.fire({
         toast: true,
         icon: 'error',
         title: error.response?.data?.message || 'Something went wrong!',
         position: 'top-end',
-        background: '#e47a7aff', // 🔥 داكن
+        background: '#e47a7aff',
         color: '#fff',
         showConfirmButton: false,
         timer: 5000,
         timerProgressBar: true
       });
+    })
+    .finally(() => {
+      isLoading = false;
+      scrollLoader.style.display = "none"; // 🔥 إخفاء Loader الصغير بعد التحميل
     });
 };
-  getPosts()
 
+// 🔥 تحميل أول صفحة Posts
+window.addEventListener("load", () => {
+  getPosts(true); // أول مرة
+});
+
+// 🔥 تحميل تلقائي مع Scroll
+window.addEventListener("scroll", () => {
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000) {
+    getPosts();
+  }
+});
 
 
   logInBtnModal.addEventListener("click",function(e){
@@ -492,7 +508,10 @@ function dismissLoadingToast() {
       closeAddPostModal()
       
       // render posts
-      getPosts()
+  currentPage = 1;
+  lastPage = null;
+  postsContainer.innerHTML = ""; 
+  getPosts(true);
 
 
       Swal.fire({
