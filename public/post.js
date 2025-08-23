@@ -1,10 +1,10 @@
 // استيراد CSS
-import 'bootstrap/dist/css/bootstrap.min.css';
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
-import * as bootstrap from 'bootstrap';
+import * as bootstrap from '../node_modules/bootstrap';
 
-import axios from 'axios';
-import Swal from 'sweetalert2';
+import axios from '../node_modules/axios';
+import Swal from '../node_modules/sweetalert2';
 
 import {
         logInBtnModal,
