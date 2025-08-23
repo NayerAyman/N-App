@@ -172,7 +172,7 @@ const getPosts = function (firstLoad = false) {
 
       posts.forEach(post => {
         const postHTML = `
-          <div class="card shadow rounded-4 mx-auto mb-4"  onclick="window.location.href='/src/post.html?id=${post.id}'"  style="max-width: 90%;">
+          <div class="card shadow rounded-4 mx-auto mb-4"  onclick="window.location.href='/post.html?id=${post.id}'"  style="max-width: 90%;">
             <div class="card-header d-flex align-items-center">
               <img 
                 src="${post.author.profile_image || 'user-icon-icon_1076610-59410.avif'}" 
