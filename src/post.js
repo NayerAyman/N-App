@@ -163,7 +163,19 @@ let postID;
 
 const getPost = function() {
   if (!postId) {
-    console.error("No postId found in URL!");
+    // بدلاً من console.error("No postId found in URL!");
+Swal.fire({
+  icon: "error",
+  title: "Error",
+  text: "No postId found in URL!",
+  toast: true,
+  position: "top-end",
+  showConfirmButton: false,
+  timer: 3000,
+  background: "#333",
+  color: "#fff"
+});
+
     postsContainer.innerHTML = "<p class='text-danger'>Post not found.</p>";
     return;
   }
@@ -172,7 +184,7 @@ const getPost = function() {
     .then((res) => {
       const post = res.data.data;
       postID =  post.id
-      console.log(postID);
+      
       
       let postHtml = `
         <div class="card shadow rounded-4 mx-auto mb-4" style="max-width: 90%;">
