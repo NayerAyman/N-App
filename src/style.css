@@ -174,3 +174,15 @@ textarea:focus, textarea:hover{
 #scroll-loader {
   display: none;
 }
+
+/* 🔥 أنيميشن ناعم للبوستات */
+.post-card {
+  opacity: 0; /* شفاف في البداية */
+  transform: translateY(20px); /* نازل شويه */
+  transition: opacity 0.5s ease, transform 0.5s ease; /* انتقال ناعم */
+}
+
+.post-card.show {
+  opacity: 1; /* يظهر */
+  transform: translateY(0); /* يرجع مكانه */
+}

@@ -23,12 +23,19 @@ import {
         postTitle,
         postBody,
         postImage,
+        editPostModal,
+        editTitle,
+        editBody,
+        editImage,
+        editPostSubmit,
       }from'./constants';
 
 const postsAPI = "https://tarmeezacademy.com/api/v1/posts"
 const loginAPI = "https://tarmeezacademy.com/api/v1/login"
 const regAPI = "https://tarmeezacademy.com/api/v1/register"
 const addPostAPI = "https://tarmeezacademy.com/api/v1/posts"
+
+const token = localStorage.getItem("token");
 
 const postsContainer = document.getElementById('posts-container');
 const navbar = document.getElementById('navbar');
@@ -44,6 +51,8 @@ const navbar = document.getElementById('navbar');
             logOutBtn.classList.add("d-none")
             guest.classList.remove('d-none');
             profileLink.classList.add("d-none");
+
+            
       } 
 
       const loginUI = function(){
@@ -72,7 +81,26 @@ const navbar = document.getElementById('navbar');
       };
       document.getElementById("userName").textContent = user.name;
 
+      
       } 
+
+        const setUpUI = function(){
+
+    const token = localStorage.getItem("token")
+
+    if(token){
+
+      loginUI()
+
+    }else{
+
+      logOutUI()
+
+    }
+  }
+  setUpUI()
+
+
       
 const closeLogInModal = function(){
       const loginModalEl = document.getElementById('loginModal');
@@ -166,7 +194,7 @@ let isLoading = false;
 const scrollLoader = document.getElementById("scroll-loader");
 
 // تحميل البوستات
-const getPosts = function (firstLoad = false) {
+const getPosts = function (firstLoad = false ) {
   if (isLoading) return;
   if (lastPage && currentPage > lastPage) return;
 
@@ -178,9 +206,17 @@ const getPosts = function (firstLoad = false) {
       const { data: posts, meta } = response.data;
       lastPage = meta.last_page;
 
+      // Example: Get logged-in user data (adjust to your auth system)
+const token = localStorage.getItem("token");
+const currentUser = token ? JSON.parse(localStorage.getItem("user")) : null; 
+// user object should have an "id" field
+
       posts.forEach(post => {
+
+        const safePost = encodeURIComponent(JSON.stringify(post));
+
         const postHTML = `
-          <div class="card shadow rounded-4 mx-auto mb-4" style="cursor: pointer;" onclick="window.location.href='/post.html?id=${post.id}'"  style="max-width: 90%;">
+          <div class="card shadow rounded-4 mx-auto mb-4  "    style="max-width: 90%;">
             <div class="card-header d-flex align-items-center">
               <img 
                 src="${post.author.profile_image || 'user-icon-icon_1076610-59410.avif'}" 
@@ -194,9 +230,21 @@ const getPosts = function (firstLoad = false) {
                 <h6 class="mb-0">${post.author.name}</h6>
                 <small class="text-muted">${post.created_at}</small>
               </div>
+
+              ${
+                currentUser && currentUser.id === post.author.id
+                  ? `
+                    <!-- Edit Post Button -->
+                    <button onclick="window.editPost('${safePost}')" id="edit-btn-${post.id}" type="button" class="btn btn-primary btn-sm shadow-sm ms-auto"
+                      data-bs-toggle="modal" data-bs-target="#editPostModal">
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
+                  `
+                  : `<span id="edit-btn-placeholder-${post.id}" data-author-id="${post.author.id}" class="ms-auto"></span>`
+              }
             </div>
 
-            <div class="card-body">
+            <div class="card-body" style="cursor: pointer;" onclick="window.location.href='/post.html?id=${post.id} '">
               ${post.title ? `<h5 class="card-title">${post.title}</h5>` : ""}
               <p class="card-text">${post.body}</p>
               ${post.image ? `
@@ -214,6 +262,8 @@ const getPosts = function (firstLoad = false) {
 
         postsContainer.innerHTML += postHTML;
 
+
+
         // تحميل التاجز
         const tagsEl = document.getElementById(`tags-${post.id}`);
         tagsEl.innerHTML = post.tags.map(tag => `
@@ -224,6 +274,8 @@ const getPosts = function (firstLoad = false) {
           </button>
         `).join('');
       });
+
+
 
       currentPage++;
 
@@ -251,6 +303,26 @@ const getPosts = function (firstLoad = false) {
       scrollLoader.style.display = "none"; 
     });
 };
+
+
+function updateEditButtons() {
+  const token = localStorage.getItem("token");
+  const currentUser = token ? JSON.parse(localStorage.getItem("user")) : null;
+
+  document.querySelectorAll("[id^='edit-btn-placeholder-']").forEach((placeholder) => {
+    const postId = placeholder.id.replace("edit-btn-placeholder-", "");
+    const postAuthorId = placeholder.getAttribute("data-author-id");
+
+    if (currentUser && currentUser.id == postAuthorId) {
+      placeholder.outerHTML = `
+        <button id="edit-btn-${postId}" type="button" class="btn btn-primary btn-sm shadow-sm ms-auto"
+          data-bs-toggle="modal" data-bs-target="#editPostModal">
+          <i class="bi bi-pencil-fill"></i>
+        </button>
+      `;
+    }
+  });
+}
 
 // 🔥 تحميل أول صفحة Posts
 window.addEventListener("load", () => {
@@ -286,8 +358,13 @@ window.addEventListener("scroll", () => {
       closeLogInModal()
 
       // change nav btns
+      getPosts();
+      updateEditButtons();
+      setUpUI()
+      
 
-      loginUI()
+
+      
       // alert successes
 
       Swal.fire({
@@ -302,9 +379,13 @@ window.addEventListener("scroll", () => {
   customClass: {
     popup: 'small-toast'
   }
+  
 });
     })
     .catch(err=>{
+
+      
+      
       Swal.fire({
         toast: true,
         icon: 'error',
@@ -341,7 +422,16 @@ logOutBtn.addEventListener("click", function () {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
 
-      logOutUI()
+
+      postsContainer.innerHTML = ""; 
+      currentPage = 1; 
+      lastPage = null; 
+      getPosts(true);
+      setUpUI()
+
+
+      
+
       // ✅ Toast مودرن
       Swal.fire({
         toast: true,
@@ -359,196 +449,264 @@ logOutBtn.addEventListener("click", function () {
 });
 
 
-  const setUpUI = function(){
 
-    const token = localStorage.getItem("token")
+regSubmitBtn.addEventListener("click", async function (e) {
+  e.preventDefault();
 
-    if(token){
-
-      loginUI()
-
-    }else{
-
-      logOutUI()
-
-    }
+  const formData = new FormData();
+  formData.append("username", regUserNameInput.value);
+  formData.append("password", regPasswordInput.value);
+  formData.append("name", regnameInput.value);
+  if (regPhotoInput.files[0]) {
+    formData.append("image", regPhotoInput.files[0]);
   }
-  setUpUI()
 
-
-  regSubmitBtn.addEventListener("click",function(e){
-    e.preventDefault()
-
-    // عرض التوست (loading)
-function showLoadingToast() {
+  // 🔹 Loader small dark toast
   Swal.fire({
-    title: 'Loading...',
-    text: 'Please wait',
     toast: true,
-    position: 'top-end',
-    allowOutsideClick: false,
+    title: "Registering...",
+    position: "top-end",
     showConfirmButton: false,
-    didOpen: () => {
-      Swal.showLoading()
-    }
+    didOpen: () => Swal.showLoading(),
+    background: "#333",
+    color: "#fff",
   });
-}
 
-// إغلاق التوست
-function dismissLoadingToast() {
-  Swal.close();
-}
+  regSubmitBtn.disabled = true;
 
+  try {
+    const res = await axios.post(regAPI, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
 
+    const token = res.data.token;
+    const user = JSON.stringify(res.data.user);
 
-    
-    let formData = new FormData()
-    formData.append("username",regUserNameInput.value)
-    formData.append("password",regPasswordInput.value)
-    formData.append("name",regnameInput.value)
-    if(regPhotoInput.files[0]){
-    formData.append("image",regPhotoInput.files[0])
-    }
-    
-    showLoadingToast()
-    regSubmitBtn.disabled = true
-    axios.post(regAPI,formData,{
+    // حفظ التوكن والمستخدم
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", user);
 
-      "Content-Type":"multipart/form-data"
-    })
-    .then((res)=>{
-      const token = res.data.token
-      const user = JSON.stringify(res.data.user)
+    // اغلاق modal
+    closeRegModal();
 
-      // save token
+    // تحديث الواجهة
+    setUpUI();
 
-      localStorage.setItem("token",token)
-      localStorage.setItem("user",user)
+    // 🔹 Success small dark toast
+    Swal.fire({
+      toast: true,
+      icon: "success",
+      title: "New User Registered Successfully",
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      background: "#333",
+      color: "#fff",
+    });
 
-
-
-
-      // close modal
-      closeRegModal()
-
-      // change nav btns
-
-      loginUI()
-      // alert successes
-
-      Swal.fire({
-  toast: true,
-  icon: 'success',
-  title: 'New User Register Success',
-  position: 'top-end',
-  showConfirmButton: false,
-  timer: 2000,
-  background: '#333',
-  color: '#fff',
-  customClass: {
-    popup: 'small-toast'
+  } catch (err) {
+    // 🔹 Error small dark toast
+    Swal.fire({
+      toast: true,
+      icon: "error",
+      title: err.response?.data?.message || "Something went wrong!",
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 4000,
+      timerProgressBar: true,
+      background: "#2d2d2d",
+      color: "#fff",
+    });
+  } finally {
+    regSubmitBtn.disabled = false;
   }
 });
-    })
-    .catch(err=>{
-      Swal.fire({
-        toast: true,
-        icon: 'error',
-        title: err.response?.data?.message || 'Something went wrong!',
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 5000,
-        timerProgressBar: true
-      });
-    }).finally(()=>{
-      dismissLoadingToast()
-      regSubmitBtn.disabled = false
-    })
-  })
 
 
-  addPostSubmitBtn.addEventListener("click",function(e){
-    e.preventDefault()
 
-    const token = localStorage.getItem("token")
+addPostSubmitBtn.addEventListener("click", async function (e) {
+  e.preventDefault();
 
-    // عرض التوست (loading)
-function showLoadingToast() {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    Swal.fire({
+      toast: true,
+      icon: "warning",
+      title: "You must be logged in!",
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      background: "#333",
+      color: "#fff",
+    });
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("title", postTitle.value);
+  formData.append("body", postBody.value);
+  if (postImage.files[0]) {
+    formData.append("image", postImage.files[0]);
+  }
+
+  // 🔹 Loader small dark SweetAlert
   Swal.fire({
-    title: 'Loading...',
-    text: 'Please wait',
     toast: true,
-    position: 'top-end',
-    allowOutsideClick: false,
+    title: "Adding post...",
+    position: "top-end",
     showConfirmButton: false,
-    didOpen: () => {
-      Swal.showLoading()
-    }
+    didOpen: () => Swal.showLoading(),
+    background: "#333",
+    color: "#fff",
   });
-}
-// إغلاق التوست
-function dismissLoadingToast() {
-  Swal.close();
-}
 
-    let formData = new FormData()
-    formData.append("title",postTitle.value)
-    formData.append("body",postBody.value)
-    if(postImage.files[0]){
-    formData.append("image",postImage.files[0])
-    }
-    
-    const loder = showLoadingToast()
-    addPostSubmitBtn.disabled = true
-    axios.post(addPostAPI,formData,{
-      headers:{
-              "Authorization":`Bearer ${token} `,
-              "Content-Type":"multipart/form-data"
-              }
+  addPostSubmitBtn.disabled = true;
 
-    })
-    .then((res)=>{
+  try {
+    await axios.post(addPostAPI, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
-      console.log(res);
-      
+    closeAddPostModal();
+    currentPage = 1;
+    lastPage = null;
+    postsContainer.innerHTML = "";
+    postImage.value = "";
+    getPosts();
 
-      // close modal
-      closeAddPostModal()
-      
-      // render posts
-  currentPage = 1;
-  lastPage = null;
-  postsContainer.innerHTML = ""; 
-  getPosts(true);
+    // 🔹 Success toast small dark
+    Swal.fire({
+      toast: true,
+      icon: "success",
+      title: "Post added successfully!",
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 2500,
+      timerProgressBar: true,
+      background: "#333",
+      color: "#fff",
+    });
 
+  } catch (err) {
+    // 🔹 Error toast small dark
+    Swal.fire({
+      toast: true,
+      icon: "error",
+      title: err.response?.data?.message || "Something went wrong!",
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 4000,
+      timerProgressBar: true,
+      background: "#2d2d2d",
+      color: "#fff",
+    });
 
-      Swal.fire({
-  toast: true,
-  icon: 'success',
-  title: 'New User Register Success',
-  position: 'top-end',
-  showConfirmButton: false,
-  timer: 2000,
-  background: '#333',
-  color: '#fff',
-  customClass: {
-    popup: 'small-toast'
+  } finally {
+    addPostSubmitBtn.disabled = false;
   }
 });
-    })
-    .catch(err=>{
-      Swal.fire({
-        toast: true,
-        icon: 'error',
-        title: err.response?.data?.message || 'Something went wrong!',
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 5000,
-        timerProgressBar: true
-      });
-    }).finally(()=>{
-      addPostSubmitBtn.disabled = false
-      loder.close()
-    })
-    
+
+
+window.editPost = function (postStr) {
+  try {
+    const post = JSON.parse(decodeURIComponent(postStr));
+
+
+    editTitle.value = post.title || "";
+    editBody.value = post.body || "";
+
+    window.currentEditPostId = post.id;
+
+  } catch (err) {
+    alert("Error loading post data!",err);
+  }
+};
+
+editPostSubmit.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  const postAPI = "https://tarmeezacademy.com/api/v1/posts/";
+  const token = localStorage.getItem("token");
+
+  if (!window.currentEditPostId) {
+    Swal.fire({
+      toast: true,
+      icon: "warning",
+      title: "No post selected!",
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      background: "#333",
+      color: "#fff"
+    });
+    return;
+  }
+
+  // Show small dark loading toast
+  Swal.fire({
+    toast: true,
+    title: 'Updating...',
+    position: 'top-end',
+    showConfirmButton: false,
+    didOpen: () => Swal.showLoading(),
+    background: "#333",
+    color: "#fff"
+  });
+
+  const formData = new FormData();
+  formData.append("title", editTitle.value);
+  formData.append("body", editBody.value);
+  formData.append("_method","put");
+
+  const imageFile = editImage.files[0];
+  if (imageFile) formData.append("image", imageFile);
+
+  axios.post(`${postAPI}${window.currentEditPostId}`, formData, {
+    headers: { Authorization: `Bearer ${token}` }
   })
+  .then((res) => {
+
+    // تحديث البوستات
+    currentPage = 1;
+    lastPage = null;
+    postsContainer.innerHTML = "";
+    getPosts();
+
+    // اغلاق الـ modal
+    const editModal = bootstrap.Modal.getInstance(document.getElementById('editPostModal'));
+    if (editModal) editModal.hide();
+
+    // Success small dark toast
+    Swal.fire({
+      toast: true,
+      icon: 'success',
+      title: 'Post updated successfully',
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      background: '#333',
+      color: '#fff'
+    });
+  })
+  .catch((err) => {
+    Swal.fire({
+      toast: true,
+      icon: 'error',
+      title: err.response?.data?.message || 'Something went wrong!',
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#333',
+      color: '#fff'
+    });
+  });
+});

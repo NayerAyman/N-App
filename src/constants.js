@@ -31,3 +31,14 @@ export const addPostSubmitBtn = document.getElementById('add-post-submit');
 export const postTitle = document.getElementById("postTitle")
 export const postBody = document.getElementById("postBody")
 export const postImage = document.getElementById("postImage")
+
+// * edit post 
+export const editPostModal = document.getElementById("editPostModal")
+export const editTitle = document.getElementById("edit-Title")
+export const editBody = document.getElementById("edit-Body")
+export const editImage = document.getElementById("edit-Image")
+export const editPostSubmit = document.getElementById("edit-post-submit")
+
+
+
+

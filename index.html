@@ -30,202 +30,240 @@
   <meta name="twitter:image" content="https://n-app-sigma.vercel.app/icon%20NizzyApp.png" />
 
   <!-- CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
   <link rel="stylesheet" href="/src/style.css">
 </head>
 
 <body>
-<!-- //* starting logo */ -->
+  <!-- //* starting logo */ -->
   <div id="preloader">
     <img src="icon NizzyApp.png" alt="Loading..." class="logo-pulse">
   </div>
 
-<!-- //* starting logo */ -->
+  <!-- //* starting logo */ -->
   <!-- modals -->
 
   <!-- & add post modal -->
 
-<div class="modal fade" id="addPostModal" tabindex="-1" aria-labelledby="addPostModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-4 shadow-lg border-0">
-      
-      <!-- Header -->
-      <div class="modal-header border-0">
-        <h5 class="modal-title fw-bold" id="addPostModalLabel">Create New Post</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      
-      <!-- Body -->
-      <div class="modal-body">
-        <form id="addPostForm" class="needs-validation" novalidate enctype="multipart/form-data">
-          
-          <div class="mb-3">
-            <label for="postTitle" class="form-label fw-semibold">Post Title</label>
-            <input 
-              type="text" 
-              class="form-control rounded-3" 
-              id="postTitle" 
-              placeholder="Enter your post title" 
-              required>
-          </div>
-          
-          <div class="mb-3">
-            <label for="postBody" class="form-label fw-semibold">Post Content</label>
-            <textarea 
-              class="form-control rounded-3" 
-              id="postBody" 
-              rows="4" 
-              placeholder="Write something..." 
-              required></textarea>
-          </div>
+  <div class="modal fade" id="addPostModal" tabindex="-1" aria-labelledby="addPostModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 shadow-lg border-0">
 
-          <div class="mb-3">
-            <label for="postImage" class="form-label fw-semibold">Attach Image (optional)</label>
-            <input 
-              type="file" 
-              class="form-control rounded-3" 
-              id="postImage" 
-              accept="image/*">
-          </div>
-          
-          <div class="d-grid">
-            <button id="add-post-submit" type="submit" class="btn btn-primary rounded-3 fw-semibold shadow-sm">
-              Publish Post
-            </button>
-          </div>
-          
-        </form>
+        <!-- Header -->
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold" id="addPostModalLabel">Create New Post</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body">
+          <form id="addPostForm" class="needs-validation" novalidate enctype="multipart/form-data">
+
+            <div class="mb-3">
+              <label for="postTitle" class="form-label fw-semibold">Post Title</label>
+              <input type="text" class="form-control rounded-3" id="postTitle" placeholder="Enter your post title"
+                required>
+            </div>
+
+            <div class="mb-3">
+              <label for="postBody" class="form-label fw-semibold">Post Content</label>
+              <textarea class="form-control rounded-3" id="postBody" rows="4" placeholder="Write something..."
+                required></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="postImage" class="form-label fw-semibold">Attach Image (optional)</label>
+              <input type="file" class="form-control rounded-3" id="postImage" accept="image/*">
+            </div>
+
+            <div class="d-grid">
+              <button id="add-post-submit" type="submit" class="btn btn-primary rounded-3 fw-semibold shadow-sm">
+                Publish Post
+              </button>
+            </div>
+
+          </form>
+        </div>
+
       </div>
-      
     </div>
   </div>
-</div>
+
   <!-- & add post modal //-->
+
+  <!-- ? edit post modal -->
+
+  <div class="modal fade" id="editPostModal" tabindex="-1" aria-labelledby="editPostModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 shadow-lg border-0">
+
+        <!-- Header -->
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold" id="editPostModalLabel">Edit Post</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body">
+          <form id="editPostForm" class="needs-validation" novalidate enctype="multipart/form-data">
+
+            <div class="mb-3">
+              <label for="postTitle" class="form-label fw-semibold">Post Title</label>
+              <input type="text" class="form-control rounded-3" id="edit-Title" placeholder="Enter your post title"
+                required>
+            </div>
+
+            <div class="mb-3">
+              <label for="postBody" class="form-label fw-semibold">Post Content</label>
+              <textarea class="form-control rounded-3" id="edit-Body" rows="4" placeholder="Write something..."
+                required></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="postImage" class="form-label fw-semibold">Attach Image (optional)</label>
+              <input type="file" class="form-control rounded-3" id="edit-Image" accept="image/*">
+            </div>
+
+            <div class="d-grid">
+              <button id="edit-post-submit" type="submit" class="btn btn-primary rounded-3 fw-semibold shadow-sm">
+                Edit
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ? edit post modal //-->
 
 
   <!--& Register Modal -->
 
-<div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content rounded-4 shadow-lg border-0">
-      
-      <!-- Header -->
-      <div class="modal-header border-0 bg-primary text-white rounded-top-4">
-        <h5 class="modal-title fw-bold">
-          <i class="bi bi-person-plus-fill me-2"></i> Create Account
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      
-      <!-- Body -->
-      <div class="modal-body p-4">
-        <form id="registerForm" class="needs-validation" novalidate>
-          <div class="row g-3">
-            
-            <!-- Full Name -->
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Name</label>
-              <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-person"></i></span>
-                <input id="reg-name" type="text" class="form-control" placeholder="John Doe" required>
-              </div>
-            </div>
-            
-            <!-- Username -->
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Username</label>
-              <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-at"></i></span>
-                <input id="reg-user-name" type="text" class="form-control" placeholder="@username" required>
-              </div>
-            </div>
-            
+  <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content rounded-4 shadow-lg border-0">
 
-            <!-- Password -->
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Password</label>
-              <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                <input type="password" id="reg-Password" class="form-control" placeholder="••••••" required>
-                <button class="btn btn-outline-secondary" type="button" id="rtogglePassword">
-                  <i class="bi bi-eye"></i>
-                </button>
+        <!-- Header -->
+        <div class="modal-header border-0 bg-primary text-white rounded-top-4">
+          <h5 class="modal-title fw-bold">
+            <i class="bi bi-person-plus-fill me-2"></i> Create Account
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body p-4">
+          <form id="registerForm" class="needs-validation" novalidate>
+            <div class="row g-3">
+
+              <!-- Full Name -->
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Name</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-person"></i></span>
+                  <input id="reg-name" type="text" class="form-control" placeholder="John Doe" required>
+                </div>
+              </div>
+
+              <!-- Username -->
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Username</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-at"></i></span>
+                  <input id="reg-user-name" type="text" class="form-control" placeholder="@username" required>
+                </div>
+              </div>
+
+
+              <!-- Password -->
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Password</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                  <input type="password" id="reg-Password" class="form-control" placeholder="••••••" required>
+                  <button class="btn btn-outline-secondary" type="button" id="rtogglePassword">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Profile Photo -->
+              <div class="col-12">
+                <label class="form-label fw-semibold">Profile Photo</label>
+                <input id="reg-photo" class="form-control" type="file" accept="image/*">
               </div>
             </div>
-            
-            <!-- Profile Photo -->
-            <div class="col-12">
-              <label class="form-label fw-semibold">Profile Photo</label>
-              <input id="reg-photo" class="form-control" type="file" accept="image/*">
-            </div>
-          </div>
-        </form>
+          </form>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer border-0 d-flex justify-content-between">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button id="reg-sbmit" type="submit" form="registerForm" class="btn btn-primary">
+            <i class="bi bi-person-check me-1"></i> Register
+          </button>
+        </div>
+
       </div>
-      
-      <!-- Footer -->
-      <div class="modal-footer border-0 d-flex justify-content-between">
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-        <button id="reg-sbmit" type="submit" form="registerForm" class="btn btn-primary">
-          <i class="bi bi-person-check me-1"></i> Register
-        </button>
-      </div>
-      
     </div>
   </div>
-</div>
 
   <!--& register Modal -->
 
-    <!--&login Modal -->
-<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-4 shadow-lg">
-      <div class="modal-header border-0">
-        <h5 class="modal-title" id="loginModalLabel">Log In</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="loginForm">
-          <!-- Email -->
-          <div class="mb-3">
-            <label for="emailInput" class="form-label">User Name</label>
-            <input type="text" class="form-control form-control-lg rounded-pill" id="emailInput"
-              placeholder="Enter your email" required>
-          </div>
+  <!--&login Modal -->
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 shadow-lg">
+        <div class="modal-header border-0">
+          <h5 class="modal-title" id="loginModalLabel">Log In</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="loginForm">
+            <!-- Email -->
+            <div class="mb-3">
+              <label for="emailInput" class="form-label">User Name</label>
+              <input value="n nayer" type="text" class="form-control form-control-lg rounded-pill" id="emailInput"
+                placeholder="Enter your email" required>
+            </div>
 
-          <!-- Password -->
-          <div class="mb-3 position-relative">
-            <label for="passwordInput" class="form-label">Password</label>
-            <input type="password" class="form-control form-control-lg rounded-pill" id="passwordInput"
-              placeholder="Enter your password" required>
+            <!-- Password -->
+            <div class="mb-3 position-relative">
+              <label for="passwordInput" class="form-label">Password</label>
+              <input value="111111" type="password" class="form-control form-control-lg rounded-pill" id="passwordInput"
+                placeholder="Enter your password" required>
 
-            <button type="button" style="top:55px;"
-              class="btn btn-sm position-absolute end-0 translate-middle-y me-3" id="togglePassword">
-              Show
-            </button>
-          </div>
+              <button type="button" style="top:55px;" class="btn btn-sm position-absolute end-0 translate-middle-y me-3"
+                id="togglePassword">
+                Show
+              </button>
+            </div>
 
-          <!-- Submit -->
-          <div class="d-grid mb-3">
-            <button type="submit" id="btn-login" class="btn btn-primary btn-lg rounded-pill">Log In</button>
-          </div>
+            <!-- Submit -->
+            <div class="d-grid mb-3">
+              <button type="submit" id="btn-login" class="btn btn-primary btn-lg rounded-pill">Log In</button>
+            </div>
 
-          <!-- 🔥 Added this -->
-          <div class="text-center">
-            <small class="text-muted">Don't have an account? 
-              <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal" class="fw-bold text-primary">
-                Register
-              </a>
-            </small>
-          </div>
-          <!-- 🔥 End -->
-        </form>
+            <!-- 🔥 Added this -->
+            <div class="text-center">
+              <small class="text-muted">Don't have an account?
+                <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal"
+                  class="fw-bold text-primary">
+                  Register
+                </a>
+              </small>
+            </div>
+            <!-- 🔥 End -->
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
-    <!--&login modal  -->
+  <!--&login modal  -->
 
 
   <!--/ // modals // -->
@@ -233,7 +271,7 @@
 
 
   <!--* nav bar -->
-  <div  id="navbar"  class="container shadow rounded-4  bg-white my-2" ">
+  <div id="navbar" class="container shadow rounded-4  bg-white my-2" ">
     <!-- nav bar -->
     <nav class=" navbar navbar-expand-lg navbar-light style="max-width: 100%; shadow rounded-4">
     <div class="container">
@@ -252,31 +290,32 @@
         <ul class="navbar-nav me-auto">
           <li class="nav-item activ">
             <a style="font-size: large ; font-weight: 700 ; " class="nav-link " href="#">
-              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-house-door-fill" viewBox="0 0 16 20">
+              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                class="bi bi-house-door-fill" viewBox="0 0 16 20">
 
-          <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5"/>
-        </svg>
+                <path
+                  d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5" />
+              </svg>
               Home</a>
-            </li>
-        <li id="Profile" style="font-size: large ; font-weight: 700 ;" class="nav-item">
-          <a class="nav-link d-flex align-items-center gap-2" href="#">
-            <img id="userPhoto" 
-                src="default-avatar.png" 
-                alt="User Photo" 
-                class="rounded-circle" 
-                width="30" height="30">
-            <span id="userName">Profile</span>
-          </a>
-        </li>
+          </li>
+          <li id="Profile" style="font-size: large ; font-weight: 700 ;" class="nav-item">
+            <a class="nav-link d-flex align-items-center gap-2" href="#">
+              <img id="userPhoto" src="default-avatar.png" alt="User Photo" class="rounded-circle" width="30"
+                height="30">
+              <span id="userName">Profile</span>
+            </a>
+          </li>
 
         </ul>
 
         <!-- Two buttons on the right -->
         <div class="d-flex">
-          <button id="btn-register" style="font-weight: 600;" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#registerModal">register</button>
-          <button id="btn-log-in-nav" style="font-weight: 600;" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+          <button id="btn-register" style="font-weight: 600;" class="btn btn-outline-primary me-2"
+            data-bs-toggle="modal" data-bs-target="#registerModal">register</button>
+          <button id="btn-log-in-nav" style="font-weight: 600;" class="btn btn-primary" data-bs-toggle="modal"
+            data-bs-target="#loginModal">Login</button>
           <button id="btn-logout" style="font-weight: 600;" class="btn btn-danger me-2 d-none">
-          Logout
+            Logout
           </button>
         </div>
       </div>
@@ -285,31 +324,31 @@
 
     <!-- / / nav bar// -->
   </div>
-<!--*/ / nav bar // -->
+  <!--*/ / nav bar // -->
 
   <!-- posts -->
   <div id="posts-container"  class="container ">
     <!-- post -->
-  
+
+
+
     <!-- /post// -->
-    
-</div>
-  <!-- scrol loader -->
-<div id="scroll-loader" class="text-center my-4" style="display: none;">
-  <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
+
   </div>
-</div>
+
+
+  <!-- scrol loader -->
+  <div id="scroll-loader" class="text-center my-4" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
 
   <!-- / / posts // -->
 
   <!-- * add post btn -->
 
-<button
-  id="fabAddPost"
-  type="button"
-  class="btn btn-primary rounded-circle position-fixed d-none"
-  style="
+  <button id="fabAddPost" type="button" class="btn btn-primary rounded-circle position-fixed d-none" style="
     width:64px; height:64px;
     right:1rem; bottom:1rem; z-index:1080;
     background: linear-gradient(135deg, #5865f2, #7a5cff);
@@ -318,15 +357,11 @@
     align-items: center;
     justify-content: center;
     padding: 0;
-  "
-  data-bs-toggle="modal"
-  data-bs-target="#addPostModal"
-  aria-label="Add Post"
->
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-    <path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
-  </svg>
-</button>
+  " data-bs-toggle="modal" data-bs-target="#addPostModal" aria-label="Add Post">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+      <path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.2" stroke-linecap="round" />
+    </svg>
+  </button>
 
 
 
@@ -339,12 +374,13 @@
   <div id="guestBadge" class="guest-badge" aria-label="Guest user" title="Guest">
     <!-- SVG ضيف بسيط -->
     <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-      <path fill="currentColor" d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.42 0-8 2.239-8 5v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-2.761-3.58-5-8-5Z"/>
+      <path fill="currentColor"
+        d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.42 0-8 2.239-8 5v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-2.761-3.58-5-8-5Z" />
     </svg>
   </div>
   <!-- * Guest Badge -->
 
-  <script type="module" src="/src/main.js"  ></script>
+  <script type="module" src="/src/main.js"></script>
 </body>
 
 </html>

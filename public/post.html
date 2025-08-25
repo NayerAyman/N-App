@@ -175,6 +175,7 @@
     </div>
 
     <!-- Add Post Modal -->
+
     <div class="modal fade" id="addPostModal" tabindex="-1" aria-labelledby="addPostModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 shadow-lg border-0">
@@ -204,6 +205,51 @@
             </div>
         </div>
     </div>
+    
+    <!-- edit post modal -->
+  <div class="modal fade" id="editPostModal" tabindex="-1" aria-labelledby="editPostModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 shadow-lg border-0">
+
+        <!-- Header -->
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold" id="editPostModalLabel">Edit Post</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body">
+          <form id="editPostForm" class="needs-validation" novalidate enctype="multipart/form-data">
+
+            <div class="mb-3">
+              <label for="postTitle" class="form-label fw-semibold">Post Title</label>
+              <input type="text" class="form-control rounded-3" id="edit-Title" placeholder="Enter your post title"
+                required>
+            </div>
+
+            <div class="mb-3">
+              <label for="postBody" class="form-label fw-semibold">Post Content</label>
+              <textarea class="form-control rounded-3" id="edit-Body" rows="4" placeholder="Write something..."
+                required></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="postImage" class="form-label fw-semibold">Attach Image (optional)</label>
+              <input type="file" class="form-control rounded-3" id="edit-Image" accept="image/*">
+            </div>
+
+            <div class="d-grid">
+              <button id="edit-post-submit" type="submit" class="btn btn-primary rounded-3 fw-semibold shadow-sm">
+                Edit
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
 
     <!-- Register Modal -->
     <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
@@ -375,6 +421,11 @@
         const guest = document.getElementById('guestBadge');
         const profileLink = document.getElementById('Profile');
         const preloader = document.getElementById('preloader');
+        const editPostModal = document.getElementById("editPostModal")
+        const editTitle = document.getElementById("edit-Title")
+        const editBody = document.getElementById("edit-Body")
+        const editImage = document.getElementById("edit-Image")
+        const editPostSubmit = document.getElementById("edit-post-submit")
 
         const postAPI = "https://tarmeezacademy.com/api/v1/posts/";
         const loginAPI = "https://tarmeezacademy.com/api/v1/login";
@@ -409,6 +460,17 @@
             document.getElementById("userName").textContent = user.name;
         };
 
+        // Setup UI
+        const setUpUI = () => {
+            const token = localStorage.getItem("token");
+            if (token) {
+                loginUI();
+            } else {
+                logOutUI();
+            }
+        };
+        setUpUI();
+
         const closeLogInModal = () => {
             const loginModalEl = document.getElementById('loginModal');
             const modal = bootstrap.Modal.getInstance(loginModalEl) || new bootstrap.Modal(loginModalEl);
@@ -440,30 +502,30 @@
         };
 
         // Navbar Scroll Effect
-let lastScroll = 0;
-const popDownNav = () => {
-    // Set navbar to visible and scroll to top on page load
-    navbar.style.top = "0";
-    window.scrollTo(0, 0);
-
-    window.addEventListener('scroll', () => {
-        const currentScroll = window.pageYOffset;
-
-        if (currentScroll === 0) {
-            // Always show navbar when at the top of the page
+        let lastScroll = 0;
+        const popDownNav = () => {
+            // Set navbar to visible and scroll to top on page load
             navbar.style.top = "0";
-        } else if (currentScroll > lastScroll) {
-            // Scrolling down → hide navbar
-            navbar.style.top = "-100px";
-        } else {
-            // Scrolling up → show navbar
-            navbar.style.top = "0";
-        }
+            window.scrollTo(0, 0);
 
-        lastScroll = currentScroll;
-    });
-};
-popDownNav();
+            window.addEventListener('scroll', () => {
+                const currentScroll = window.pageYOffset;
+
+                if (currentScroll === 0) {
+                    // Always show navbar when at the top of the page
+                    navbar.style.top = "0";
+                } else if (currentScroll > lastScroll) {
+                    // Scrolling down → hide navbar
+                    navbar.style.top = "-100px";
+                } else {
+                    // Scrolling up → show navbar
+                    navbar.style.top = "0";
+                }
+
+                lastScroll = currentScroll;
+            });
+        };
+        popDownNav();
 
         // Password Toggle
         const showPasswordRegister = () => {
@@ -497,7 +559,10 @@ popDownNav();
         // Get Post
         const urlParams = new URLSearchParams(window.location.search);
         const postId = urlParams.get('id');
+        // Example: Get logged-in user data (adjust to your auth system)
         const token = localStorage.getItem("token");
+        const currentUser = token ? JSON.parse(localStorage.getItem("user")) : null; 
+        // user object should have an "id" field
 
         const getPost = () => {
             if (!postId) {
@@ -518,7 +583,11 @@ popDownNav();
 
             axios.get(`${postAPI}${postId}`)
                 .then((res) => {
+                    const token = localStorage.getItem("token");
+                    const currentUser = token ? JSON.parse(localStorage.getItem("user")) : null; 
+
                     const post = res.data.data;
+                    const safePost = encodeURIComponent(JSON.stringify(post));
                     let postHtml = `
                         <div class="card shadow rounded-4 mx-auto mb-4" style="max-width: 90%;">
                             <div class="card-header d-flex align-items-center">
@@ -529,6 +598,17 @@ popDownNav();
                                     <h6 class="mb-0">${post.author.name}</h6>
                                     <small class="text-muted">${post.created_at}</small>
                                 </div>
+                                ${
+                                    currentUser && currentUser.id === post.author.id
+                                    ? `
+                                        <!-- Edit Post Button -->
+                                        <button onclick="window.editPoste('${safePost}')" id="edit-btn-${post.id}" type="button" class="btn btn-primary btn-sm shadow-sm ms-auto"
+                                        data-bs-toggle="modal" data-bs-target="#editPostModal">
+                                        <i class="bi bi-pencil-fill"></i>
+                                        </button>
+                                    `
+                                    : `<span id="edit-btn-placeholder-${post.id}" data-author-id="${post.author.id}" class="ms-auto"></span>`
+                                }
                             </div>
                             <div class="card-body">
                                 ${post.title ? `<h5 class="card-title">${post.title}</h5>` : ""}
@@ -588,6 +668,25 @@ popDownNav();
 
         window.addEventListener("load", getPost);
 
+        function updateEditButtons() {
+            const token = localStorage.getItem("token");
+            const currentUser = token ? JSON.parse(localStorage.getItem("user")) : null;
+
+            document.querySelectorAll("[id^='edit-btn-placeholder-']").forEach((placeholder) => {
+                const postId = placeholder.id.replace("edit-btn-placeholder-", "");
+                const postAuthorId = placeholder.getAttribute("data-author-id");
+
+                if (currentUser && currentUser.id == postAuthorId) {
+                placeholder.outerHTML = `
+                    <button id="edit-btn-${postId}" type="button" class="btn btn-primary btn-sm shadow-sm ms-auto"
+                    data-bs-toggle="modal" data-bs-target="#editPostModal">
+                    <i class="bi bi-pencil-fill"></i>
+                    </button>
+                `;
+                }
+            });
+        }
+
         // Login
         logInBtnModal.addEventListener("click", (e) => {
             e.preventDefault();
@@ -602,8 +701,9 @@ popDownNav();
                     localStorage.setItem("token", token);
                     localStorage.setItem("user", user);
                     closeLogInModal();
-                    loginUI();
-                    window.location.reload();
+                    getPost()
+                    updateEditButtons();
+                    setUpUI()
                     Swal.fire({
                         toast: true,
                         icon: 'success',
@@ -648,8 +748,14 @@ popDownNav();
                 if (result.isConfirmed) {
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
-                    logOutUI();
-                    window.location.reload();
+
+                    
+                    
+                    
+                    getPost()
+                    setUpUI()
+                    
+                    
                     Swal.fire({
                         toast: true,
                         position: 'top-end',
@@ -662,151 +768,181 @@ popDownNav();
                         customClass: { popup: 'animate__animated animate__fadeInUp small-toast' }
                     });
                 }
-            });
+            }).catch((err)=>alert(err)
+            )
         });
 
-        // Setup UI
-        const setUpUI = () => {
-            const token = localStorage.getItem("token");
-            if (token) {
-                loginUI();
-            } else {
-                logOutUI();
-            }
-        };
-        setUpUI();
 
-        // Register
-        regSubmitBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            function showLoadingToast() {
-                Swal.fire({
-                    title: 'Loading...',
-                    text: 'Please wait',
-                    toast: true,
-                    position: 'top-end',
-                    allowOutsideClick: false,
-                    showConfirmButton: false,
-                    didOpen: () => Swal.showLoading()
-                });
-            }
-            function dismissLoadingToast() {
-                Swal.close();
-            }
-            let formData = new FormData();
-            formData.append("username", regUserNameInput.value);
-            formData.append("password", regPasswordInput.value);
-            formData.append("name", regnameInput.value);
-            if (regPhotoInput.files[0]) {
-                formData.append("image", regPhotoInput.files[0]);
-            }
-            showLoadingToast();
-            regSubmitBtn.disabled = true;
-            axios.post(regAPI, formData, {
-                headers: { "Content-Type": "multipart/form-data" }
-            })
-                .then((res) => {
-                    const token = res.data.token;
-                    const user = JSON.stringify(res.data.user);
-                    localStorage.setItem("token", token);
-                    localStorage.setItem("user", user);
-                    closeRegModal();
-                    loginUI();
-                    window.location.reload();
-                    Swal.fire({
-                        toast: true,
-                        icon: 'success',
-                        title: 'New User Register Success',
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 2000,
-                        background: '#333',
-                        color: '#fff',
-                        customClass: { popup: 'small-toast' }
-                    });
-                })
-                .catch(err => {
-                    Swal.fire({
-                        toast: true,
-                        icon: 'error',
-                        title: err.response?.data?.message || 'Something went wrong!',
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 5000,
-                        timerProgressBar: true
-                    });
-                }).finally(() => {
-                    dismissLoadingToast();
-                    regSubmitBtn.disabled = false;
-                });
-        });
+// Register
+regSubmitBtn.addEventListener("click", async (e) => {
+  e.preventDefault();
+
+  const formData = new FormData();
+  formData.append("username", regUserNameInput.value);
+  formData.append("password", regPasswordInput.value);
+  formData.append("name", regnameInput.value);
+  if (regPhotoInput.files[0]) {
+    formData.append("image", regPhotoInput.files[0]);
+  }
+
+  // 🔹 Loader small dark toast
+  Swal.fire({
+    toast: true,
+    title: "Registering...",
+    position: "top-end",
+    showConfirmButton: false,
+    didOpen: () => Swal.showLoading(),
+    background: "#333",
+    color: "#fff",
+  });
+
+  regSubmitBtn.disabled = true;
+
+  try {
+    const res = await axios.post(regAPI, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    const token = res.data.token;
+    const user = JSON.stringify(res.data.user);
+
+    // حفظ التوكن والمستخدم
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", user);
+
+    // اغلاق modal
+    closeRegModal();
+
+    // تحديث الواجهة
+    setUpUI();
+
+    // 🔹 Success small dark toast
+    Swal.fire({
+      toast: true,
+      icon: "success",
+      title: "New User Registered Successfully",
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      background: "#333",
+      color: "#fff",
+    });
+
+  } catch (err) {
+    // 🔹 Error small dark toast
+    Swal.fire({
+      toast: true,
+      icon: "error",
+      title: err.response?.data?.message || "Something went wrong!",
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 4000,
+      timerProgressBar: true,
+      background: "#2d2d2d",
+      color: "#fff",
+    });
+
+  } finally {
+    regSubmitBtn.disabled = false;
+  }
+});
+
 
         // Add Post
 
         
 
-        addPostSubmitBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            
-            const token = localStorage.getItem("token");
-            function showLoadingToast() {
-                Swal.fire({
-                    title: 'Loading...',
-                    text: 'Please wait',
-                    toast: true,
-                    position: 'top-end',
-                    allowOutsideClick: false,
-                    showConfirmButton: false,
-                    didOpen: () => Swal.showLoading()
-                });
-            }
-            function dismissLoadingToast() {
-                Swal.close();
-            }
-            let formData = new FormData();
-            formData.append("title", postTitle.value);
-            formData.append("body", postBody.value);
-            if (postImage.files[0]) {
-                formData.append("image", postImage.files[0]);
-            }
-            showLoadingToast();
-            addPostSubmitBtn.disabled = true;
-            axios.post(addPostAPI, formData, {
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "multipart/form-data"
-                }
-            })
-                .then((res) => {
-                    closeAddPostModal();
-                    window.location.href = "/index.html";
-                    Swal.fire({
-                        toast: true,
-                        icon: 'success',
-                        title: 'New Post Created Successfully',
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 2000,
-                        background: '#333',
-                        color: '#fff',
-                        customClass: { popup: 'small-toast' }
-                    });
-                })
-                .catch(err => {
-                    Swal.fire({
-                        toast: true,
-                        icon: 'error',
-                        title: err.response?.data?.message || 'Something went wrong!',
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 5000,
-                        timerProgressBar: true
-                    });
-                }).finally(() => {
-                    addPostSubmitBtn.disabled = false;
-                    dismissLoadingToast();
-                });
-        });
+addPostSubmitBtn.addEventListener("click", async (e) => {
+  e.preventDefault();
+
+  const token = localStorage.getItem("token");
+
+  // 🔹 Loading modal
+  function showLoadingModal() {
+    Swal.fire({
+      title: "Loading...",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+      background: "#1e1e1e",
+      color: "#fff",
+    });
+  }
+
+  // 🔹 Close modal
+  function dismissLoadingModal() {
+    Swal.close();
+  }
+
+  // 🔹 Form data
+  let formDatae = new FormData();
+  formDatae.append("title", postTitle.value);
+  formDatae.append("body", postBody.value);
+  if (postImage.files[0]) {
+    formDatae.append("image", postImage.files[0]);
+  }
+
+  showLoadingModal();
+  addPostSubmitBtn.disabled = true;
+
+  try {
+    await axios.post(addPostAPI, formDatae, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    closeAddPostModal();
+    dismissLoadingModal();
+
+    Swal.fire({
+      toast: true,
+      icon: "success",
+      title: " New Post Created Successfully",
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      background: "#333",
+      color: "#fff",
+      customClass: { popup: "small-toast" },
+    });
+
+    // 🔥 Reload page after success
+    setTimeout(() => {
+      window.location.href = "/index.html";
+    }, 2000);
+
+  } catch (err) {
+    dismissLoadingModal();
+
+Swal.fire({
+  toast: true,
+  icon: "error",
+  title: err.response?.data?.message || "❌ Something went wrong!",
+  position: "top-end",
+  showConfirmButton: false,
+  timer: 4000,
+  timerProgressBar: true,
+  background: "#2d2d2d", // 🔥 لون داكن أنيق
+  color: "#fff",
+  customClass: {
+    popup: "error-toast"
+  }
+});
+
+  } finally {
+    addPostSubmitBtn.disabled = false;
+  }
+});
+
+
+
 
         // Add Comment
         function showToast(icon, title, time = 2000) {
@@ -825,6 +961,7 @@ popDownNav();
         }
 
 window.addComment = function (e, postId) {
+
     e.preventDefault();
 
     // Get the button element (adjust selector as needed)
@@ -885,6 +1022,111 @@ window.addComment = function (e, postId) {
             commentButton.disabled = false;
         });
 };
-    </script>
+
+
+
+window.editPoste = function (postStr) {
+  try {
+    const post = JSON.parse(decodeURIComponent(postStr));
+
+
+    editTitle.value = post.title || "";
+    editBody.value = post.body || "";
+
+    window.currentEditPostIde = post.id;
+
+  } catch (err) {
+    
+    alert("Error loading post data!",err);
+  }
+};
+
+editPostSubmit.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  const postAPI = "https://tarmeezacademy.com/api/v1/posts/";
+  const token = localStorage.getItem("token");
+
+  if (!window.currentEditPostIde) {
+    Swal.fire({
+      toast: true,
+      icon: "warning",
+      title: "No post selected!",
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      background: "#333",
+      color: "#fff"
+    });
+    return;
+  }
+
+  // Show small dark loading toast
+  Swal.fire({
+    toast: true,
+    title: 'Updating...',
+    position: 'top-end',
+    showConfirmButton: false,
+    didOpen: () => Swal.showLoading(),
+    background: "#333",
+    color: "#fff"
+  });
+
+  const formDatae = new FormData();
+  formDatae.append("title", editTitle.value);
+  formDatae.append("body", editBody.value);
+  formDatae.append("_method","put");
+
+  const imageFile = editImage.files[0];
+  if (imageFile) formDatae.append("image", imageFile);
+
+  axios.post(`${postAPI}${window.currentEditPostIde}`, formDatae, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  .then((res) => {
+
+
+    // تحديث البوستات
+
+    postsContainer.innerHTML = "";
+    getPost();
+
+    // اغلاق الـ modal
+    const editModal = bootstrap.Modal.getInstance(document.getElementById('editPostModal'));
+    if (editModal) editModal.hide();
+
+    // Success small dark toast
+    Swal.fire({
+      toast: true,
+      icon: 'success',
+      title: 'Post updated successfully',
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      background: '#333',
+      color: '#fff'
+    });
+  })
+  .catch((err) => {
+
+    
+    Swal.fire({
+      toast: true,
+      icon: 'error',
+      title: err.response?.data?.message || 'Something went wrong!',
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#333',
+      color: '#fff'
+    });
+  });
+});
+
+
+</script>
 </body>
 </html>
