@@ -648,6 +648,8 @@ editPostSubmit.addEventListener("click", (e) => {
     });
     return;
   }
+      editPostSubmit.disabled = true;
+
 
   // Show small dark loading toast
   Swal.fire({
@@ -708,5 +710,8 @@ editPostSubmit.addEventListener("click", (e) => {
       background: '#333',
       color: '#fff'
     });
+  }).finally(() => {
+    // إعادة تفعيل الزر بعد انتهاء الطلب
+    editPostSubmit.disabled = false;
   });
 });

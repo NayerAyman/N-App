@@ -1061,8 +1061,7 @@ editPostSubmit.addEventListener("click", (e) => {
     });
     return;
   }
-
-  // Show small dark loading toast
+    editPostSubmit.disabled = true;  // Show small dark loading toast
   Swal.fire({
     toast: true,
     title: 'Updating...',
@@ -1122,7 +1121,10 @@ editPostSubmit.addEventListener("click", (e) => {
       timerProgressBar: true,
       background: '#333',
       color: '#fff'
-    });
+    }) 
+}) .finally(() => {
+    // إعادة تفعيل الزر بعد انتهاء الطلب
+    editPostSubmit.disabled = false;
   });
 });
 
